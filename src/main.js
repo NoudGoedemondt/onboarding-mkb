@@ -9,6 +9,9 @@ import * as directives from 'vuetify/directives';
 const vuetify = createVuetify({
   components,
   directives,
+  theme: {
+    defaultTheme: 'light',
+  },
 });
 
 createApp(App).use(router).use(vuetify).mount('#app');
