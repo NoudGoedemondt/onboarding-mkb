@@ -1,23 +1,27 @@
 <template>
   <div>
     <v-app-bar :elevation="hasDropShadow ? 4 : 0">
-      <v-app-bar-title>My App</v-app-bar-title>
+      <v-container :style="{ maxWidth: '70vw' }" class="d-flex align-center">
+        <v-app-bar-title>
+          <v-img :src="logo" width="120"></v-img>
+        </v-app-bar-title>
 
-      <div class="d-flex align-center">
-        <v-btn
-          v-for="(menuItem, index) in menuItems"
-          :key="index"
-          class="mx-2"
-          variant="text"
-          @mouseenter="openMenu(index)"
-          @mouseleave="closeMenu"
-        >
-          {{ menuItem.title }}
-          <v-icon right>
-            {{ activeMenu === index ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-          </v-icon>
-        </v-btn>
-      </div>
+        <div class="d-flex align-center">
+          <v-btn
+            v-for="(menuItem, index) in menuItems"
+            :key="index"
+            class="mx-2"
+            variant="text"
+            @mouseenter="openMenu(index)"
+            @mouseleave="closeMenu"
+          >
+            {{ menuItem.title }}
+            <v-icon right>
+              {{ activeMenu === index ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+            </v-icon>
+          </v-btn>
+        </div>
+      </v-container>
     </v-app-bar>
 
     <!-- Expanding menu panel -->
@@ -59,8 +63,11 @@
 //TODO: menu items zijn stuk, maak bestaande routes
 //TODO: menu item lay out is stuk
 
+import logo from '@/assets/pti-logo-klein-paars.webp';
+
 export default {
   data: () => ({
+    logo,
     activeMenu: null,
     closeTimeout: null,
     hasDropShadow: true,
