@@ -29,7 +29,7 @@
       >
         <v-card
           class="py-4 mr-10 rounded-lg"
-          max-width="600px"
+          max-width="650px"
           :style="{ backgroundColor: 'rgba(255, 255, 255, 0.7)' }"
           flat
         >
