@@ -1,14 +1,37 @@
-export const colors = {
-  'pti-25': '#F5F0F7',
-  'pti-50': '#F9E2F5',
-  'pti-100': '#F3C8EC',
-  'pti-200': '#E891DA',
-  'pti-300': '#DC5BC7',
-  'pti-400': '#CA2BB0',
-  'pti-500': '#931F80',
-  'pti-600': '#761966',
-  'pti-700': '#58134D',
-  'pti-800': '#3B0C33',
-  'pti-900': '#1D061A',
-  'pti-950': '#0D030B',
+export const ptiLightTheme = {
+  dark: false,
+  colors: {
+    background: '#FFFFFF',
+    surface: '#FFFFFF',
+    'surface-bright': '#FFFFFF',
+    'surface-light': '#F5F0F7',
+    'surface-variant': '#F3C8EC',
+    'on-surface-variant': '#761966',
+    primary: '#931F80', // pti-500
+    'primary-darken-1': '#761966', // pti-600
+    secondary: '#DC5BC7', // pti-300
+    'secondary-darken-1': '#CA2BB0', // pti-400
+    error: '#B00020',
+    info: '#2196F3',
+    success: '#4CAF50',
+    warning: '#FB8C00',
+  },
+  variables: {
+    'border-color': '#000000',
+    'border-opacity': 0.12,
+    'high-emphasis-opacity': 0.87,
+    'medium-emphasis-opacity': 0.6,
+    'disabled-opacity': 0.38,
+    'idle-opacity': 0.04,
+    'hover-opacity': 0.04,
+    'focus-opacity': 0.12,
+    'selected-opacity': 0.08,
+    'activated-opacity': 0.12,
+    'pressed-opacity': 0.12,
+    'dragged-opacity': 0.08,
+    'theme-kbd': '#212529',
+    'theme-on-kbd': '#FFFFFF',
+    'theme-code': '#F5F5F5',
+    'theme-on-code': '#000000',
+  },
 };

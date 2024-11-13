@@ -25,7 +25,7 @@
     </v-app-bar>
 
     <!-- Expanding menu panel -->
-    <v-expand-transition>
+    <v-expand-x-transition>
       <v-sheet
         v-if="activeMenu !== null"
         class="expanding-menu"
@@ -54,7 +54,7 @@
           </v-row>
         </v-list>
       </v-sheet>
-    </v-expand-transition>
+    </v-expand-x-transition>
   </div>
 </template>
 
