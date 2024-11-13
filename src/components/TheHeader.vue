@@ -62,8 +62,7 @@
 //TODO: convert naar composition api
 //TODO: menu items zijn stuk, maak bestaande routes
 //TODO: menu item lay out is stuk
-
-import logo from '@/assets/pti-logo-klein-paars.webp';
+import logo from '@/assets/PTI-logo_landscape.svg';
 
 export default {
   data: () => ({
