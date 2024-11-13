@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-app-bar :elevation="hasDropShadow ? 4 : 0">
-      <v-container :style="{ maxWidth: '70vw' }" class="d-flex align-center">
+    <v-app-bar>
+      <v-container max-width="70vw" class="d-flex align-center">
         <v-app-bar-title>
           <v-img :src="logo" width="120"></v-img>
         </v-app-bar-title>
@@ -25,10 +25,11 @@
     </v-app-bar>
 
     <!-- Expanding menu panel -->
-    <v-expand-x-transition>
+    <v-expand-transition>
       <v-sheet
         v-if="activeMenu !== null"
-        class="expanding-menu"
+        class="position-absolute left-0 right-0"
+        style="top: 80px; z-index: 10"
         @mouseenter="keepMenuOpen"
         @mouseleave="closeMenu"
       >
@@ -39,12 +40,7 @@
               :key="index"
               cols="3"
             >
-              <v-list-item
-                :to="item.route"
-                link
-                class="menu-item"
-                color="primary"
-              >
+              <v-list-item :to="item.route" link>
                 <template v-slot:prepend>
                   <v-icon>{{ item.icon }}</v-icon>
                 </template>
@@ -54,98 +50,64 @@
           </v-row>
         </v-list>
       </v-sheet>
-    </v-expand-x-transition>
+    </v-expand-transition>
   </div>
 </template>
 
-<script>
-//TODO: convert naar composition api
+<script setup>
 //TODO: menu items zijn stuk, maak bestaande routes
 //TODO: menu item lay out is stuk
+
+import { ref, computed } from 'vue';
 import logo from '@/assets/PTI-logo_landscape.svg';
 
-export default {
-  data: () => ({
-    logo,
-    activeMenu: null,
-    closeTimeout: null,
-    hasDropShadow: true,
-    menuItems: [
-      {
-        title: 'Products',
-        items: [
-          { title: 'All Products', icon: 'mdi-view-grid', route: '/products' },
-          { title: 'Categories', icon: 'mdi-shape', route: '/categories' },
-          { title: 'New Arrivals', icon: 'mdi-new-box', route: '/new' },
-          { title: 'Special Offers', icon: 'mdi-tag', route: '/offers' },
-        ],
-      },
-      {
-        title: 'Services',
-        items: [
-          {
-            title: 'Consulting',
-            icon: 'mdi-account-tie',
-            route: '/consulting',
-          },
-          { title: 'Support', icon: 'mdi-help-circle', route: '/support' },
-          { title: 'Training', icon: 'mdi-school', route: '/training' },
-        ],
-      },
-      {
-        title: 'Company',
-        items: [
-          { title: 'About Us', icon: 'mdi-information', route: '/about' },
-          { title: 'Contact', icon: 'mdi-email', route: '/contact' },
-          { title: 'Careers', icon: 'mdi-briefcase', route: '/careers' },
-        ],
-      },
+const activeMenu = ref(null);
+const closeTimeout = ref(null);
+const menuItems = ref([
+  {
+    title: 'Branches',
+    items: [
+      { title: 'Bouw en Vastgoed', icon: 'mdi-view-grid', route: '/' },
+      { title: 'IT en ITES', icon: 'mdi-shape', route: '/' },
+      { title: 'Gezondheidszorg', icon: 'mdi-new-box', route: '/' },
+      { title: 'Productie', icon: 'mdi-tag', route: '/' },
+      { title: 'Vervoer en Logistiek', icon: 'mdi-view-grid', route: '/' },
     ],
-  }),
-
-  computed: {
-    activeMenuItems() {
-      return this.activeMenu !== null
-        ? this.menuItems[this.activeMenu].items
-        : [];
-    },
   },
-
-  methods: {
-    openMenu(index) {
-      clearTimeout(this.closeTimeout);
-      this.activeMenu = index;
-      this.hasDropShadow = false;
-    },
-    closeMenu() {
-      this.closeTimeout = setTimeout(() => {
-        this.activeMenu = null;
-        this.hasDropShadow = true;
-      }, 150);
-    },
-    keepMenuOpen() {
-      clearTimeout(this.closeTimeout);
-    },
+  {
+    title: 'Modules',
+    items: [
+      { title: 'Werkorderbeheer', icon: 'mdi-view-grid', route: '/' },
+      { title: 'Gebruikersbeheer', icon: 'mdi-shape', route: '/' },
+      { title: 'Procesbeheer', icon: 'mdi-view-grid', route: '/' },
+      { title: 'Projectbeheer', icon: 'mdi-tag', route: '/' },
+      { title: 'Planning', icon: 'mdi-new-box', route: '/' },
+      { title: 'Verdeeltool', icon: 'mdi-view-grid', route: '/' },
+      { title: 'Klantenportaal', icon: 'mdi-view-grid', route: '/' },
+      { title: 'Klantcommunicatie', icon: 'mdi-view-grid', route: '/' },
+    ],
   },
+  {
+    title: 'Tarieven',
+    items: [
+      { title: 'Calculator', icon: 'mdi-view-grid', route: '/' },
+      { title: 'Lorem', icon: 'mdi-shape', route: '/' },
+      { title: 'Lorem', icon: 'mdi-new-box', route: '/' },
+    ],
+  },
+]);
+
+const activeMenuItems = computed(() =>
+  activeMenu.value !== null ? menuItems.value[activeMenu.value].items : []
+);
+const openMenu = (index) => {
+  clearTimeout(closeTimeout.value);
+  activeMenu.value = index;
 };
+const closeMenu = () => {
+  closeTimeout.value = setTimeout(() => {
+    activeMenu.value = null;
+  }, 150);
+};
+const keepMenuOpen = () => clearTimeout(closeTimeout.value);
 </script>
-
-<style scoped>
-.expanding-menu {
-  position: absolute;
-  top: 64px; /* Height of v-app-bar */
-  left: 0;
-  right: 0;
-  background-color: rgb(var(--v-theme-surface));
-  z-index: 100;
-}
-
-.menu-item {
-  transition: background-color 0.2s;
-  border-radius: 4px;
-}
-
-.menu-item:hover {
-  background-color: rgba(var(--v-theme-primary), 0.1);
-}
-</style>
