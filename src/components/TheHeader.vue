@@ -1,49 +1,53 @@
 <template>
   <div>
-    <v-app-bar>
-      <v-container max-width="70vw" class="d-flex align-center">
-        <v-app-bar-title>
-          <v-img :src="logo" width="120"></v-img>
-        </v-app-bar-title>
+    <v-expand-transition>
+      <v-app-bar :height="activeMenuItemIndex !== null ? 280 : 64">
+        <v-container max-width="70vw" class="top-container d-flex align-center">
+          <v-app-bar-title>
+            <v-img :src="logo" width="120"></v-img>
+          </v-app-bar-title>
 
-        <v-menu
-          v-for="(menuItem, index) in menuItems"
-          :key="index"
-          v-model="activeMenu"
+          <v-btn
+            v-for="(items, index) in menuItems"
+            :key="index"
+            @click="setActiveMenuItemIndex(index)"
+          >
+            {{ items.title }}
+          </v-btn>
+        </v-container>
+
+        <v-container
+          v-if="activeMenuItemIndex !== null"
+          max-width="70vw"
+          class="expanded-content"
         >
-          <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" class="mx-2" variant="text">
-              {{ menuItem.title }}
-            </v-btn>
-          </template>
-
-          <v-list v-if="activeMenu === index">
-            <v-list-item
-              v-for="(item, itemIndex) in menuItem.items"
-              :key="itemIndex"
-              :to="item.route"
+          <v-row>
+            <v-col
+              cols="12"
+              md="4"
+              v-for="(subItems, index) in activeMenuItems"
+              :key="index"
             >
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-container>
-    </v-app-bar>
+              <v-list-item :to="subItems.route" class="px-2">
+                <template v-slot:prepend>
+                  <v-icon :icon="subItems.icon"></v-icon>
+                </template>
+                <v-list-item-title>{{ subItems.title }}</v-list-item-title>
+              </v-list-item>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-app-bar>
+    </v-expand-transition>
   </div>
 </template>
 
 <script setup>
-/*
- * TODO
- * --navigatie menu items fixen
- * --menu item layout veranderen
- */
-
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import logo from '@/assets/PTI-logo_landscape.svg';
 
-const activeMenu = ref(null);
-// const closeTimeout = ref(null);
+const activeMenuItemIndex = ref(null);
+
 const menuItems = ref([
   {
     title: 'Branches',
@@ -78,17 +82,32 @@ const menuItems = ref([
   },
 ]);
 
-// const activeMenuItems = computed(() =>
-//   activeMenu.value !== null ? menuItems.value[activeMenu.value].items : []
-// );
-// const openMenu = (index) => {
-//   clearTimeout(closeTimeout.value);
-//   activeMenu.value = index;
-// };
-// const closeMenu = () => {
-//   closeTimeout.value = setTimeout(() => {
-//     activeMenu.value = null;
-//   }, 150);
-// };
-// const keepMenuOpen = () => clearTimeout(closeTimeout.value);
+const activeMenuItems = computed(() =>
+  activeMenuItemIndex.value !== null
+    ? menuItems.value[activeMenuItemIndex.value].items
+    : []
+);
+
+const setActiveMenuItemIndex = (index) =>
+  activeMenuItemIndex.value === index
+    ? (activeMenuItemIndex.value = null)
+    : (activeMenuItemIndex.value = index);
 </script>
+
+<style scoped>
+.top-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+}
+
+.expanded-content {
+  position: absolute;
+  top: 64px;
+  left: 0;
+  right: 0;
+  background: inherit;
+}
+</style>
