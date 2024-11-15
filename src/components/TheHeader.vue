@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-app-bar :height="activeMenuItemIndex !== null ? 280 : 64">
+    <v-app-bar :height="activeMenuItemIndex !== null ? 220 : 64">
       <v-container max-width="70vw" class="top-container d-flex align-center">
         <v-app-bar-title>
           <router-link to="/">
@@ -29,8 +29,7 @@
       >
         <v-row>
           <v-col
-            cols="12"
-            md="4"
+            cols="3"
             v-for="(subItems, index) in activeMenuItems"
             :key="index"
           >
