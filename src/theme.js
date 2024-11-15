@@ -9,8 +9,8 @@ export const ptiLightTheme = {
     'on-surface-variant': '#761966',
     primary: '#931F80', // pti-500
     'primary-darken-1': '#761966', // pti-600
-    secondary: '#DC5BC7', // pti-300
-    'secondary-darken-1': '#CA2BB0', // pti-400
+    secondary: '#F4850B', // pti-orange
+    'secondary-darken-1': '#C46A09', // darkened pti-orange
     error: '#B00020',
     info: '#2196F3',
     success: '#4CAF50',
