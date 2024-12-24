@@ -22,11 +22,7 @@
       }"
       fluid
     >
-      <v-row
-        align="center"
-        justify="center"
-        :style="{ minHeight: `${heroHeight}` }"
-      >
+      <v-row align="center" justify="center" style="margin-top: 200px">
         <v-card
           class="py-4 mr-10 rounded-lg"
           max-width="650px"
@@ -62,7 +58,7 @@
           </v-card-actions>
         </v-card>
 
-        <img :src="ctaMockUp" width="600" height="auto" />
+        <img :src="ctaMockUp" width="600" />
       </v-row>
     </v-container>
   </div>
@@ -73,5 +69,5 @@ import ctaMockUp from '@/assets/CTA-mock-up-1024x692.webp';
 import waveCard from '@/assets/wave-card-grid-w.webp';
 import planningSuiteLogo from '@/assets/pti-logo-wide.svg';
 
-const heroHeight = '650px';
+const heroHeight = '100vh';
 </script>
