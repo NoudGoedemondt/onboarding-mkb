@@ -42,7 +42,7 @@
           <v-card-actions class="pa-6 pt-0">
             <v-btn
               size="large"
-              color="secondary"
+              color="primary"
               class="text-body-1 px-6"
               variant="elevated"
             >
