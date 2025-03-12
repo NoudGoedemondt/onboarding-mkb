@@ -7,7 +7,6 @@
       :rules="[required, validEmail]"
       class="mb-2"
       label="Email"
-      clearable
     ></v-text-field>
 
     <!-- Password Field -->
@@ -18,7 +17,6 @@
       class="mb-2"
       label="Password"
       placeholder="Enter your password"
-      clearable
       type="password"
     ></v-text-field>
 
@@ -29,7 +27,6 @@
       :rules="[required, passwordMatch]"
       label="Re-enter Password"
       placeholder="Confirm your password"
-      clearable
       type="password"
     ></v-text-field>
 

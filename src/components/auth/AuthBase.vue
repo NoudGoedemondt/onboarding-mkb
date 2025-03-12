@@ -18,22 +18,45 @@
       </v-card-text>
     </v-card>
   </v-sheet>
+  <div class="mt-5 text-center">
+    logged in as:
+    <p v-if="user">{{ user }}</p>
+    <p v-else>not logged in</p>
+
+    <v-btn @click="logout">logout</v-btn>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
+import { auth } from '@/firebase';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
+
 import AuthSignInForm from './AuthSignInForm.vue';
 import AuthSignUpForm from './AuthSignUpForm.vue';
 
+const user = ref(null);
 const authMethod = ref('sign-in');
 
 const toggleMessage = computed(() =>
   authMethod.value === 'sign-in' ? 'Not a user yet?' : 'Already a user?'
 );
-
 const toggleLink = computed(() =>
   authMethod.value === 'sign-in' ? ' Register' : ' Sign in'
 );
+
+const logout = async () => {
+  try {
+    await signOut(auth);
+    console.log('User signed out');
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+onAuthStateChanged(auth, (currentUser) => {
+  user.value = currentUser;
+});
 
 const toggleAuthMethod = () => {
   authMethod.value = authMethod.value === 'sign-in' ? 'sign-up' : 'sign-in';

@@ -6,7 +6,6 @@
       :rules="[required]"
       class="mb-2"
       label="Email"
-      clearable
     ></v-text-field>
 
     <v-text-field
@@ -15,7 +14,7 @@
       :rules="[required]"
       label="Password"
       placeholder="Enter your password"
-      clearable
+      type="password"
     ></v-text-field>
 
     <br />
@@ -36,18 +35,37 @@
 
 <script setup>
 import { ref } from 'vue';
+import { auth } from '@/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 const form = ref(false);
 const email = ref(null);
 const password = ref(null);
 const loading = ref(false);
 
-function onSubmit() {
-  if (!form.value) return;
-  loading.value = true;
-  setTimeout(() => (loading.value = false), 2000);
-}
 function required(v) {
   return !!v || 'Field is required';
 }
+
+const signIn = async () => {
+  try {
+    await signInWithEmailAndPassword(auth, email.value, password.value);
+    console.log('User signed in:', auth.currentUser);
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+const onSubmit = async () => {
+  if (!form.value) return;
+  loading.value = true;
+
+  try {
+    await signIn();
+  } catch (error) {
+    console.error(error.message);
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
