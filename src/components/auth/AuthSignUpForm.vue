@@ -53,6 +53,9 @@
 <script setup>
 import { ref } from 'vue';
 
+import { auth } from '@/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+
 const form = ref(false);
 const email = ref('');
 const password = ref('');
@@ -67,14 +70,25 @@ const minPassword = (v) =>
   (v && v.length >= 6) || 'Password must be at least 6 characters';
 const passwordMatch = (v) => v === password.value || 'Passwords do not match';
 
-const onSubmit = () => {
+const register = async () => {
+  try {
+    await createUserWithEmailAndPassword(auth, email.value, password.value);
+    console.log('User registered:', auth.currentUser);
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+const onSubmit = async () => {
   if (!form.value) return;
   loading.value = true;
 
-  //Function for registering users vvvvvv
-  setTimeout(() => {
+  try {
+    await register();
+  } catch (error) {
+    console.error(error.message);
+  } finally {
     loading.value = false;
-    alert('User registered successfully!');
-  }, 2000);
+  }
 };
 </script>
