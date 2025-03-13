@@ -1,5 +1,14 @@
 <template>
   <v-form v-model="form" @submit.prevent="onSubmit">
+    <!-- Name Field -->
+    <v-text-field
+      v-model="name"
+      :readonly="loading"
+      :rules="[required]"
+      class="mb-2"
+      label="Name"
+    ></v-text-field>
+
     <!-- Email Field -->
     <v-text-field
       v-model="email"
@@ -25,8 +34,8 @@
       v-model="confirmPassword"
       :readonly="loading"
       :rules="[required, passwordMatch]"
-      label="Re-enter Password"
-      placeholder="Confirm your password"
+      label="Confirm Password"
+      placeholder="Re-enter your password"
       type="password"
     ></v-text-field>
 
@@ -51,9 +60,14 @@
 import { ref } from 'vue';
 
 import { auth } from '@/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signOut,
+} from 'firebase/auth';
 
 const form = ref(false);
+const name = ref('');
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
@@ -69,10 +83,23 @@ const passwordMatch = (v) => v === password.value || 'Passwords do not match';
 
 const register = async () => {
   try {
-    await createUserWithEmailAndPassword(auth, email.value, password.value);
-    console.log('User registered:', auth.currentUser);
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email.value,
+      password.value
+    );
+
+    await updateProfile(userCredential.user, {
+      displayName: name.value,
+    });
+
+    //Log out and reload page to get redirected to log in screen
+    await signOut(auth);
+    location.reload();
+
+    console.log('User registered:', userCredential.user);
   } catch (error) {
-    console.error(error.message);
+    console.error('Registration error:', error.message);
   }
 };
 
