@@ -1,64 +1,121 @@
 <template>
-  <v-app-bar :height="activeMenuItemIndex !== null ? 220 : 64" elevation="1">
-    <v-container max-width="70vw" class="top-container d-flex align-center">
-      <v-app-bar-title>
+  <v-app-bar elevation="1">
+    <v-container max-width="70vw" class="d-flex align-center justify-end">
+      <!-- Logo -->
+      <v-app-bar-title class="mr-auto">
         <router-link to="/">
-          <v-img :src="logo" width="120" class="cursos-pointer"></v-img>
+          <v-img :src="logo" width="120" class="cursor-pointer"></v-img>
         </router-link>
       </v-app-bar-title>
 
-      <v-btn
-        v-for="(items, index) in menuItems"
-        :key="index"
-        @click="setActiveMenuItemIndex(index)"
-        :prepend-icon="
-          index === activeMenuItemIndex ? 'mdi-chevron-down' : 'mdi-chevron-up'
-        "
-      >
-        {{ items.title }}
-      </v-btn>
+      <v-spacer></v-spacer>
 
-      <!-- log in button -->
-    </v-container>
+      <!-- Navigation Menu (Aligned Right) -->
+      <div v-for="(menu, index) in menuItems" :key="index">
+        <v-menu open-on-hover>
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props">
+              {{ menu.title }}
+              <v-icon end>mdi-chevron-down</v-icon>
+            </v-btn>
+          </template>
 
-    <v-container
-      v-if="activeMenuItemIndex !== null"
-      max-width="70vw"
-      class="expanded-content"
-    >
-      <v-row>
-        <v-col
-          cols="3"
-          v-for="(subItems, index) in activeMenuItems"
-          :key="index"
-        >
-          <v-list-item :to="subItems.route">
-            <template v-slot:prepend>
-              <v-icon :icon="subItems.icon"></v-icon>
-            </template>
-            <v-list-item-title>{{ subItems.title }}</v-list-item-title>
+          <v-list>
+            <v-list-item
+              v-for="(subItem, subIndex) in menu.items"
+              :key="subIndex"
+              :to="subItem.route"
+            >
+              <template v-slot:prepend>
+                <v-icon>{{ subItem.icon }}</v-icon>
+              </template>
+              <v-list-item-title>{{ subItem.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+
+      <!-- Dynamic User Profile Dropdown -->
+      <v-menu v-if="user" open-on-hover>
+        <template v-slot:activator="{ props }">
+          <v-btn v-bind="props" icon>
+            <v-avatar color="primary">
+              <v-icon icon="mdi-account-circle"></v-icon>
+            </v-avatar>
+          </v-btn>
+        </template>
+
+        <v-list>
+          <v-list-item>
+            <v-list-item-title>{{
+              user.displayName || 'User'
+            }}</v-list-item-title>
+            <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
           </v-list-item>
-        </v-col>
-      </v-row>
+
+          <v-divider></v-divider>
+
+          <v-list-item to="/profile">
+            <v-icon>mdi-account</v-icon>
+            <v-list-item-title>Profile</v-list-item-title>
+          </v-list-item>
+
+          <v-list-item @click="logout">
+            <v-icon color="red">mdi-logout</v-icon>
+            <v-list-item-title>Logout</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+      <!-- Show "Log In" Button When Not Logged In -->
+      <v-btn v-else color="primary" to="/login">Log In</v-btn>
     </v-container>
   </v-app-bar>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { auth } from '@/firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import logo from '@/assets/PTI-logo_landscape.svg';
 
-const activeMenuItemIndex = ref(null);
+const router = useRouter();
+const user = ref(null);
+
+onMounted(() => {
+  onAuthStateChanged(auth, (currentUser) => {
+    user.value = currentUser;
+  });
+});
+
+const logout = async () => {
+  try {
+    await signOut(auth);
+    user.value = null;
+    router.push('/login');
+  } catch (error) {
+    console.error('Logout error:', error.message);
+  }
+};
 
 const menuItems = ref([
   {
     title: 'Branches',
     items: [
-      { title: 'Bouw en Vastgoed', icon: 'mdi-home-city', route: '/test' },
-      { title: 'IT en ITES', icon: 'mdi-desktop-classic', route: '/test' },
-      { title: 'Gezondheidszorg', icon: 'mdi-hospital-box', route: '/test' },
-      { title: 'Productie', icon: 'mdi-factory', route: '/test' },
-      { title: 'Vervoer en Logistiek', icon: 'mdi-truck-fast', route: '/test' },
+      { title: 'Bouw en Vastgoed', icon: 'mdi-home-city', route: '/bouw' },
+      { title: 'IT en ITES', icon: 'mdi-desktop-classic', route: '/it' },
+      {
+        title: 'Gezondheidszorg',
+        icon: 'mdi-hospital-box',
+        route: '/healthcare',
+      },
+      { title: 'Productie', icon: 'mdi-factory', route: '/production' },
+      {
+        title: 'Vervoer en Logistiek',
+        icon: 'mdi-truck-fast',
+        route: '/logistics',
+      },
     ],
   },
   {
@@ -67,57 +124,46 @@ const menuItems = ref([
       {
         title: 'Werkorderbeheer',
         icon: 'mdi-file-document-outline',
-        route: '/test',
+        route: '/workorders',
       },
-      { title: 'Gebruikersbeheer', icon: 'mdi-account-group', route: '/test' },
-      { title: 'Procesbeheer', icon: 'mdi-cogs', route: '/test' },
-      { title: 'Projectbeheer', icon: 'mdi-briefcase-outline', route: '/test' },
-      { title: 'Planning', icon: 'mdi-calendar-clock', route: '/test' },
-      { title: 'Verdeeltool', icon: 'mdi-arrow-decision', route: '/test' },
+      { title: 'Gebruikersbeheer', icon: 'mdi-account-group', route: '/users' },
+      { title: 'Procesbeheer', icon: 'mdi-cogs', route: '/processes' },
+      {
+        title: 'Projectbeheer',
+        icon: 'mdi-briefcase-outline',
+        route: '/projects',
+      },
+      { title: 'Planning', icon: 'mdi-calendar-clock', route: '/planning' },
+      {
+        title: 'Verdeeltool',
+        icon: 'mdi-arrow-decision',
+        route: '/distribution',
+      },
       {
         title: 'Klantenportaal',
         icon: 'mdi-account-arrow-right',
-        route: '/test',
+        route: '/customer-portal',
       },
-      { title: 'Klantcommunicatie', icon: 'mdi-email-outline', route: '/test' },
+      {
+        title: 'Klantcommunicatie',
+        icon: 'mdi-email-outline',
+        route: '/communication',
+      },
     ],
   },
   {
     title: 'Tarieven',
     items: [
-      { title: 'Calculator', icon: 'mdi-calculator', route: '/test' },
-      { title: 'Lorem', icon: 'mdi-information-outline', route: '/test' },
-      { title: 'Lorem', icon: 'mdi-file-outline', route: '/test' },
+      { title: 'Calculator', icon: 'mdi-calculator', route: '/calculator' },
+      { title: 'Info', icon: 'mdi-information-outline', route: '/info' },
+      { title: 'Bestanden', icon: 'mdi-file-outline', route: '/files' },
     ],
   },
 ]);
-
-const activeMenuItems = computed(() =>
-  activeMenuItemIndex.value !== null
-    ? menuItems.value[activeMenuItemIndex.value].items
-    : []
-);
-
-const setActiveMenuItemIndex = (index) =>
-  activeMenuItemIndex.value === index
-    ? (activeMenuItemIndex.value = null)
-    : (activeMenuItemIndex.value = index);
 </script>
 
 <style scoped>
-.top-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
-}
-
-.expanded-content {
-  position: absolute;
-  top: 64px;
-  left: 0;
-  right: 0;
-  background: inherit;
+.cursor-pointer {
+  cursor: pointer;
 }
 </style>
