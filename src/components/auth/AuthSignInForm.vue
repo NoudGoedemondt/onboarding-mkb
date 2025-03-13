@@ -35,12 +35,15 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { auth } from '@/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
+const router = useRouter();
+
 const form = ref(false);
-const email = ref(null);
-const password = ref(null);
+const email = ref('');
+const password = ref('');
 const loading = ref(false);
 
 function required(v) {
@@ -51,6 +54,11 @@ const signIn = async () => {
   try {
     await signInWithEmailAndPassword(auth, email.value, password.value);
     console.log('User signed in:', auth.currentUser);
+
+    email.value = '';
+    password.value = '';
+
+    router.push('/');
   } catch (error) {
     console.error(error.message);
   }
