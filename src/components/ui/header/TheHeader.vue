@@ -10,9 +10,9 @@
 
       <v-spacer></v-spacer>
 
-      <!-- Navigation Menu (Aligned Right) -->
+      <!-- Navigation Menu -->
       <div v-for="(menu, index) in menuItems" :key="index">
-        <v-menu open-on-hover>
+        <v-menu open-on-hover transition="slide-y-transition">
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props">
               {{ menu.title }}
@@ -20,7 +20,7 @@
             </v-btn>
           </template>
 
-          <v-list>
+          <v-list elevation="1" style="margin-top: 14px">
             <v-list-item
               v-for="(subItem, subIndex) in menu.items"
               :key="subIndex"
@@ -36,7 +36,12 @@
       </div>
 
       <!-- Dynamic User Profile Dropdown -->
-      <v-menu v-if="user" open-on-hover>
+      <v-menu
+        v-if="user"
+        class="ml-5"
+        open-on-hover
+        transition="slide-y-transition"
+      >
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" icon>
             <v-avatar color="primary">
@@ -45,7 +50,7 @@
           </v-btn>
         </template>
 
-        <v-list>
+        <v-list elevation="1" style="margin-top: 8px">
           <v-list-item>
             <v-list-item-title>{{
               user.displayName || 'User'
@@ -68,7 +73,9 @@
       </v-menu>
 
       <!-- Show "Log In" Button When Not Logged In -->
-      <v-btn v-else color="primary" to="/login">Log In</v-btn>
+      <v-btn v-else class="ml-5" color="primary" variant="elevated" to="/login"
+        >Log In</v-btn
+      >
     </v-container>
   </v-app-bar>
 </template>
