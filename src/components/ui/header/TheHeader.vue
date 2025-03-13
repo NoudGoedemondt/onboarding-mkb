@@ -44,7 +44,7 @@
       >
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" icon>
-            <v-avatar color="primary">
+            <v-avatar>
               <v-icon icon="mdi-account-circle"></v-icon>
             </v-avatar>
           </v-btn>

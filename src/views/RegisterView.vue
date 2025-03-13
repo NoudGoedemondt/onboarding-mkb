@@ -80,27 +80,13 @@
       </v-card-text>
     </v-card>
   </v-sheet>
-
-  <!-- Remove this after testing -->
-  <div class="mt-5 text-center">
-    logged in as:
-    <p v-if="user">{{ user }}</p>
-    <p v-else>not logged in</p>
-
-    <v-btn @click="logout">logout</v-btn>
-  </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { auth } from '@/firebase';
-import {
-  signOut,
-  onAuthStateChanged,
-  createUserWithEmailAndPassword,
-  updateProfile,
-} from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 const router = useRouter();
 
@@ -111,8 +97,6 @@ const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 const loading = ref(false);
-
-const user = ref(null); // remove this after testing
 
 //input field validation checks
 const required = (v) => !!v || 'Field is required';
@@ -141,9 +125,7 @@ const register = async () => {
       displayName: getFullName(),
     });
 
-    //Log out and get redirected to log in screen, should be keeping redirect link
-    await signOut(auth);
-    router.push('/login');
+    router.push('/'); //automatic redirect to home, should be redirect based on query param
 
     console.log('User registered:', userCredential.user);
   } catch (error) {
@@ -161,19 +143,4 @@ const onSubmit = async () => {
     loading.value = false;
   }
 };
-
-const logout = async () => {
-  // remove this after testing
-  try {
-    await signOut(auth);
-    console.log('User signed out');
-  } catch (error) {
-    console.error(error.message);
-  }
-};
-
-onAuthStateChanged(auth, (currentUser) => {
-  // remove this after testing
-  user.value = currentUser;
-});
 </script>
