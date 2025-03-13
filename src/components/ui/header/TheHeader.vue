@@ -14,7 +14,7 @@
       <div v-for="(menu, index) in menuItems" :key="index">
         <v-menu open-on-hover transition="slide-y-transition">
           <template v-slot:activator="{ props }">
-            <v-btn v-bind="props">
+            <v-btn v-bind="props" class="mx-1">
               {{ menu.title }}
               <v-icon end>mdi-chevron-down</v-icon>
             </v-btn>
