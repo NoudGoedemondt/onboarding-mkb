@@ -1,12 +1,20 @@
 <template>
   <v-form v-model="form" @submit.prevent="onSubmit">
-    <!-- Name Field -->
+    <!-- Name Fields -->
     <v-text-field
-      v-model="name"
+      v-model="firstName"
       :readonly="loading"
       :rules="[required]"
       class="mb-2"
-      label="Name"
+      label="First Name"
+    ></v-text-field>
+
+    <v-text-field
+      v-model="lastName"
+      :readonly="loading"
+      :rules="[required]"
+      class="mb-2"
+      label="Last Name"
     ></v-text-field>
 
     <!-- Email Field -->
@@ -17,6 +25,8 @@
       class="mb-2"
       label="Email"
     ></v-text-field>
+
+    <br />
 
     <!-- Password Field -->
     <v-text-field
@@ -67,7 +77,8 @@ import {
 } from 'firebase/auth';
 
 const form = ref(false);
-const name = ref('');
+const firstName = ref('');
+const lastName = ref('');
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
@@ -81,6 +92,12 @@ const minPassword = (v) =>
   (v && v.length >= 6) || 'Password must be at least 6 characters';
 const passwordMatch = (v) => v === password.value || 'Passwords do not match';
 
+const getFullName = () => {
+  const trimmedFirst = firstName.value.trim();
+  const trimmedLast = lastName.value.trim();
+  return `${trimmedFirst} ${trimmedLast}`.trim(); // Avoid extra spaces
+};
+
 const register = async () => {
   try {
     const userCredential = await createUserWithEmailAndPassword(
@@ -90,7 +107,7 @@ const register = async () => {
     );
 
     await updateProfile(userCredential.user, {
-      displayName: name.value,
+      displayName: getFullName(),
     });
 
     //Log out and reload page to get redirected to log in screen
@@ -109,8 +126,6 @@ const onSubmit = async () => {
 
   try {
     await register();
-  } catch (error) {
-    console.error(error.message);
   } finally {
     loading.value = false;
   }
