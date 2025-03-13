@@ -1,3 +1,3 @@
 <template>
-  <h1>TestView</h1>
+  <p>Profile Card</p>
 </template>

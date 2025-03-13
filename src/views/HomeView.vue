@@ -4,6 +4,6 @@
 </template>
 
 <script setup>
-import TheHero from '@/components/TheHero.vue';
-import CustomerSlider from '@/components/CustomerSlider.vue';
+import TheHero from '@/components/ui/TheHero.vue';
+import CustomerSlider from '@/components/ui/CustomerSlider.vue';
 </script>

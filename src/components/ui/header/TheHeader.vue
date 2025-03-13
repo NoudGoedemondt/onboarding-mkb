@@ -1,49 +1,47 @@
 <template>
-  <div>
-    <v-app-bar :height="activeMenuItemIndex !== null ? 220 : 64">
-      <v-container max-width="70vw" class="top-container d-flex align-center">
-        <v-app-bar-title>
-          <router-link to="/">
-            <v-img :src="logo" width="120" class="cursos-pointer"></v-img>
-          </router-link>
-        </v-app-bar-title>
+  <v-app-bar :height="activeMenuItemIndex !== null ? 220 : 64" elevation="1">
+    <v-container max-width="70vw" class="top-container d-flex align-center">
+      <v-app-bar-title>
+        <router-link to="/">
+          <v-img :src="logo" width="120" class="cursos-pointer"></v-img>
+        </router-link>
+      </v-app-bar-title>
 
-        <v-btn
-          v-for="(items, index) in menuItems"
-          :key="index"
-          @click="setActiveMenuItemIndex(index)"
-          :prepend-icon="
-            index === activeMenuItemIndex
-              ? 'mdi-chevron-down'
-              : 'mdi-chevron-up'
-          "
-        >
-          {{ items.title }}
-        </v-btn>
-      </v-container>
-
-      <v-container
-        v-if="activeMenuItemIndex !== null"
-        max-width="70vw"
-        class="expanded-content"
+      <v-btn
+        v-for="(items, index) in menuItems"
+        :key="index"
+        @click="setActiveMenuItemIndex(index)"
+        :prepend-icon="
+          index === activeMenuItemIndex ? 'mdi-chevron-down' : 'mdi-chevron-up'
+        "
       >
-        <v-row>
-          <v-col
-            cols="3"
-            v-for="(subItems, index) in activeMenuItems"
-            :key="index"
-          >
-            <v-list-item :to="subItems.route">
-              <template v-slot:prepend>
-                <v-icon :icon="subItems.icon"></v-icon>
-              </template>
-              <v-list-item-title>{{ subItems.title }}</v-list-item-title>
-            </v-list-item>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-app-bar>
-  </div>
+        {{ items.title }}
+      </v-btn>
+
+      <!-- log in button -->
+    </v-container>
+
+    <v-container
+      v-if="activeMenuItemIndex !== null"
+      max-width="70vw"
+      class="expanded-content"
+    >
+      <v-row>
+        <v-col
+          cols="3"
+          v-for="(subItems, index) in activeMenuItems"
+          :key="index"
+        >
+          <v-list-item :to="subItems.route">
+            <template v-slot:prepend>
+              <v-icon :icon="subItems.icon"></v-icon>
+            </template>
+            <v-list-item-title>{{ subItems.title }}</v-list-item-title>
+          </v-list-item>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-app-bar>
 </template>
 
 <script setup>
