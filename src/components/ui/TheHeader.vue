@@ -44,14 +44,12 @@
       >
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" icon>
-            <v-avatar>
-              <v-icon icon="mdi-account-circle"></v-icon>
-            </v-avatar>
+            <v-icon icon="mdi-account-circle"></v-icon>
           </v-btn>
         </template>
 
         <v-list elevation="1" style="margin-top: 8px">
-          <v-list-item>
+          <v-list-item class="mb-1">
             <v-list-item-title>{{
               user.displayName || 'User'
             }}</v-list-item-title>
@@ -60,13 +58,10 @@
 
           <v-divider></v-divider>
 
-          <v-list-item to="/profile">
-            <v-icon>mdi-account</v-icon>
-            <v-list-item-title>Profile</v-list-item-title>
-          </v-list-item>
-
           <v-list-item @click="logout">
-            <v-icon color="red">mdi-logout</v-icon>
+            <template v-slot:prepend>
+              <v-icon>mdi-logout</v-icon>
+            </template>
             <v-list-item-title>Logout</v-list-item-title>
           </v-list-item>
         </v-list>
