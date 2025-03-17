@@ -5,7 +5,7 @@ import ModuleView from './views/ModuleView.vue';
 import BrancheView from './views/BrancheView.vue';
 import LoginView from './views/LoginView.vue';
 import RegisterView from './views/RegisterView.vue';
-import TestView from './views/TestView.vue';
+import CompanyFormView from './views/CompanyFormView.vue';
 
 const routes = [
   { path: '/', component: HomeView },
@@ -13,7 +13,7 @@ const routes = [
   { path: '/branches', component: BrancheView },
   { path: '/login', component: LoginView },
   { path: '/register', component: RegisterView },
-  { path: '/test', component: TestView },
+  { path: '/bedrijfsgegevens', component: CompanyFormView },
 ];
 
 const router = createRouter({
