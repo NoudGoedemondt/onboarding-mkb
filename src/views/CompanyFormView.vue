@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if="user">
     <v-card class="pa-5 mx-auto" max-width="600">
       <v-card-title class="text-h5">Bedrijfsgegevens</v-card-title>
       <v-card-text>
@@ -57,10 +57,19 @@
       </v-card-actions>
     </v-card>
   </v-container>
+  <v-container v-else>
+    <v-progress-circular color="purple" indeterminate></v-progress-circular>
+  </v-container>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { auth } from '@/firebase';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const user = ref(null);
 
 const valid = ref(false);
 const company = ref({
@@ -81,4 +90,13 @@ const submitForm = () => {
     alert('Bedrijfsgegevens opgeslagen!');
   }
 };
+
+onMounted(() => {
+  auth.onAuthStateChanged((firebaseUser) => {
+    user.value = firebaseUser;
+    if (!user.value) {
+      router.push('/login'); // Redirect als niet ingelogd
+    }
+  });
+});
 </script>
