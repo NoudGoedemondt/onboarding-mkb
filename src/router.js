@@ -30,7 +30,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const user = auth.currentUser;
   if (to.matched.some((record) => record.meta.requiresAuth) && !user) {
-    next('/register');
+    next({ path: '/register', query: { redirect: to.fullPath } });
   } else {
     next();
   }

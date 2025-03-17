@@ -70,10 +70,7 @@
       <v-card-text class="text-center">
         <span>
           Already a user?
-          <a
-            class="text-primary"
-            style="cursor: pointer"
-            @click="router.push('/login')"
+          <a class="text-primary" style="cursor: pointer" @click="goToLogin"
             >Sign in</a
           >
         </span>
@@ -84,11 +81,12 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { auth } from '@/firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 const router = useRouter();
+const route = useRoute();
 
 const form = ref(false);
 const firstName = ref('');
@@ -125,12 +123,17 @@ const register = async () => {
       displayName: getFullName(),
     });
 
-    router.push('/'); //automatic redirect to home, should be redirect based on query param
+    const redirectPath = route.query.redirect || '/';
+    router.push(redirectPath);
 
     console.log('User registered:', userCredential.user);
   } catch (error) {
     console.error('Registration error:', error.message);
   }
+};
+
+const goToLogin = () => {
+  router.push({ path: '/login', query: { redirect: route.query.redirect } });
 };
 
 const onSubmit = async () => {
