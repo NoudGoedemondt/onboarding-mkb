@@ -77,12 +77,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import { auth } from '@/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import logo from '@/assets/PTI-logo_landscape.svg';
 
-const router = useRouter();
 const user = ref(null);
 
 onMounted(() => {
@@ -95,7 +93,6 @@ const logout = async () => {
   try {
     await signOut(auth);
     user.value = null;
-    router.push('/login');
   } catch (error) {
     console.error('Logout error:', error.message);
   }
