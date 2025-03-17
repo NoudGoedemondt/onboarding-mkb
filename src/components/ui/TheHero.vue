@@ -45,6 +45,7 @@
               color="primary"
               class="text-body-1 px-6"
               variant="elevated"
+              to="/bedrijfsinfo"
             >
               Get Started
             </v-btn>
