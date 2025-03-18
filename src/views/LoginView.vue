@@ -16,8 +16,7 @@
           v-model="password"
           :readonly="loading"
           :rules="[required]"
-          label="Password"
-          placeholder="Enter your password"
+          label="Wachtwoord"
           type="password"
         ></v-text-field>
 
@@ -32,15 +31,15 @@
           variant="elevated"
           block
         >
-          Sign In
+          Log In
         </v-btn>
       </v-form>
 
       <v-card-text class="text-center">
         <span>
-          Not a user yet?
+          Nog geen gebruiker?
           <a class="text-primary" style="cursor: pointer" @click="goToRegister"
-            >Register</a
+            >Registreer</a
           >
         </span>
       </v-card-text>
@@ -62,7 +61,7 @@ const email = ref('');
 const password = ref('');
 const loading = ref(false);
 
-const required = (v) => !!v || 'Field is required';
+const required = (v) => !!v || 'Veld is verplicht';
 
 const signIn = async () => {
   try {

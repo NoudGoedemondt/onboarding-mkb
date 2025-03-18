@@ -8,7 +8,7 @@
           :readonly="loading"
           :rules="[required]"
           class="mb-2"
-          label="First Name"
+          label="Voornaam"
         ></v-text-field>
 
         <v-text-field
@@ -16,7 +16,7 @@
           :readonly="loading"
           :rules="[required]"
           class="mb-2"
-          label="Last Name"
+          label="Achternaam"
         ></v-text-field>
 
         <!-- Email Field -->
@@ -36,8 +36,7 @@
           :readonly="loading"
           :rules="[required, minPassword]"
           class="mb-2"
-          label="Password"
-          placeholder="Enter your password"
+          label="Wachtwoord"
           type="password"
         ></v-text-field>
 
@@ -46,8 +45,7 @@
           v-model="confirmPassword"
           :readonly="loading"
           :rules="[required, passwordMatch]"
-          label="Confirm Password"
-          placeholder="Re-enter your password"
+          label="Bevestig Wachtwoord"
           type="password"
         ></v-text-field>
 
@@ -63,15 +61,15 @@
           variant="elevated"
           block
         >
-          Register
+          Registreer
         </v-btn>
       </v-form>
 
       <v-card-text class="text-center">
         <span>
-          Already a user?
+          Al een gebruiker?
           <a class="text-primary" style="cursor: pointer" @click="goToLogin"
-            >Sign in</a
+            >Log in</a
           >
         </span>
       </v-card-text>
@@ -97,13 +95,14 @@ const confirmPassword = ref('');
 const loading = ref(false);
 
 //input field validation checks
-const required = (v) => !!v || 'Field is required';
+const required = (v) => !!v || 'Veld is verplicht';
 const validEmail = (v) =>
   /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(v) ||
-  'Enter a valid email address';
+  'Voer een geldig e-mailadres in';
 const minPassword = (v) =>
-  (v && v.length >= 6) || 'Password must be at least 6 characters';
-const passwordMatch = (v) => v === password.value || 'Passwords do not match';
+  (v && v.length >= 6) || 'Wachtwoord moet minimaal 6 tekens lang zijn';
+const passwordMatch = (v) =>
+  v === password.value || 'Wachtwoorden komen niet overeen';
 
 const getFullName = () => {
   const trimmedFirst = firstName.value.trim();

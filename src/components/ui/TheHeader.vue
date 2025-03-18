@@ -62,15 +62,18 @@
             <template v-slot:prepend>
               <v-icon>mdi-logout</v-icon>
             </template>
-            <v-list-item-title>Logout</v-list-item-title>
+            <v-list-item-title>Log Uit</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
 
       <!-- Show "Log In" Button When Not Logged In -->
-      <v-btn v-else class="ml-5" color="primary" variant="elevated" to="/login"
-        >Log In</v-btn
-      >
+      <v-btn v-else class="mx-1" color="primary" variant="text" to="/login">
+        <template v-slot:prepend>
+          <v-icon>mdi-login</v-icon>
+        </template>
+        Log In
+      </v-btn>
     </v-container>
   </v-app-bar>
 </template>
@@ -79,7 +82,7 @@
 import { ref, onMounted } from 'vue';
 import { auth } from '@/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import logo from '@/assets/PTI-logo_landscape.svg';
+import logo from '@/assets/pti/PTI-logo_landscape.svg';
 
 const user = ref(null);
 

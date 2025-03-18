@@ -33,9 +33,9 @@
 
           <v-card-text>
             <p class="text-body-1 mb-4">
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Officia
-              doloremque molestiae qui dicta debitis maiores tempora unde
-              similique. Ratione, voluptate?
+              Een schaalbaar, secure en slim softwarepakket waarmee we de
+              snelheid, efficiëntie en het gemak rondom jouw planning en
+              uitvoering vergroten.
             </p>
           </v-card-text>
 
@@ -45,16 +45,16 @@
               color="primary"
               class="text-body-1 px-6"
               variant="elevated"
-              to="/bedrijfsinfo"
+              to="/company-info"
             >
-              Get Started
+              Probeer Gratis
             </v-btn>
             <v-btn
               size="large"
               class="text-body-1 px-6 ml-4"
               variant="outlined"
             >
-              Learn More
+              Lees Meer
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -66,9 +66,9 @@
 </template>
 
 <script setup>
-import ctaMockUp from '@/assets/CTA-mock-up-1024x692.webp';
-import waveCard from '@/assets/wave-card-grid-w.webp';
-import planningSuiteLogo from '@/assets/pti-logo-wide.svg';
+import ctaMockUp from '@/assets/pti/CTA-mock-up-1024x692.webp';
+import waveCard from '@/assets/pti/wave-card-grid-w.webp';
+import planningSuiteLogo from '@/assets/pti/pti-logo-wide.svg';
 
 const heroHeight = '100vh';
 </script>

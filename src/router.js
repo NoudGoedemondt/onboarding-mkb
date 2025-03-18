@@ -16,7 +16,7 @@ const routes = [
   { path: '/login', component: LoginView },
   { path: '/register', component: RegisterView },
   {
-    path: '/bedrijfsinfo',
+    path: '/company-info',
     component: CompanyFormView,
     meta: { requiresAuth: true },
   },
