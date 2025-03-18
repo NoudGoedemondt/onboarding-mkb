@@ -64,12 +64,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { auth } from '@/firebase';
+import { auth, db } from '@/firebase';
+import { ref as dbRef, set, get } from 'firebase/database';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
 const user = ref(null);
+const companyExists = ref(false);
 
 const valid = ref(false);
 const company = ref({
@@ -84,18 +86,52 @@ const required = (v) => !!v || 'Dit veld is verplicht';
 const validZip = (v) =>
   /^[1-9][0-9]{3}\s?[a-zA-Z]{2}$/.test(v) || 'Ongeldige postcode';
 
-const submitForm = () => {
-  if (valid.value) {
-    console.log('Bedrijfsgegevens opgeslagen:', company.value);
-    alert('Bedrijfsgegevens opgeslagen!');
+const submitForm = async () => {
+  if (!valid.value) return;
+
+  if (!user.value) {
+    alert('Je moet ingelogd zijn om dit te kunnen doen!');
+    return;
+  }
+
+  const companyData = {
+    name: company.value.name,
+    address: company.value.address,
+    zip: company.value.zip,
+    city: company.value.city,
+    employees: company.value.employees,
+    owner: user.value.uid, // Koppel het bedrijf aan de gebruiker
+    createdAt: new Date().toISOString(),
+  };
+
+  try {
+    console.log(user.value.uid);
+    const companyRef = dbRef(db, `companies/${user.value.uid}`);
+    await set(companyRef, companyData);
+    console.log('Bedrijf opgeslagen:', companyData);
+
+    router.push('/');
+  } catch (error) {
+    console.error('Fout bij opslaan bedrijfsgegevens:', error);
+    alert('Er is een fout opgetreden bij het opslaan van de bedrijfsgegevens.');
   }
 };
 
-onMounted(() => {
-  auth.onAuthStateChanged((firebaseUser) => {
+onMounted(async () => {
+  auth.onAuthStateChanged(async (firebaseUser) => {
     user.value = firebaseUser;
+
     if (!user.value) {
-      router.push('/login'); // Redirect als niet ingelogd
+      router.push('/login');
+      return;
+    }
+
+    const companyRef = dbRef(db, `companies/${user.value.uid}`);
+    const snapshot = await get(companyRef);
+
+    if (snapshot.exists()) {
+      companyExists.value = true;
+      router.push('/');
     }
   });
 });
