@@ -6,6 +6,7 @@ import BrancheView from './views/BrancheView.vue';
 import LoginView from './views/LoginView.vue';
 import RegisterView from './views/RegisterView.vue';
 import CompanyFormView from './views/CompanyFormView.vue';
+import ProfileView from './views/ProfileView.vue';
 import NotFound from './views/NotFound.vue';
 
 import { auth } from '@/firebase';
@@ -21,6 +22,7 @@ const routes = [
     component: CompanyFormView,
     meta: { requiresAuth: true },
   },
+  { path: '/profile', component: ProfileView },
   {
     path: '/:pathMatch(.*)*',
     component: NotFound,

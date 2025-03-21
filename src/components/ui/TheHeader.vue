@@ -56,7 +56,14 @@
             <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
           </v-list-item>
 
-          <v-divider></v-divider>
+          <v-divider class="my-2"></v-divider>
+
+          <v-list-item to="/profile">
+            <template v-slot:prepend>
+              <v-icon>mdi-account-cog</v-icon>
+            </template>
+            <v-list-item-title>Profiel</v-list-item-title>
+          </v-list-item>
 
           <v-list-item @click="logout">
             <template v-slot:prepend>
