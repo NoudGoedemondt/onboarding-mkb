@@ -22,7 +22,7 @@ const routes = [
     component: CompanyFormView,
     meta: { requiresAuth: true },
   },
-  { path: '/profile', component: ProfileView },
+  { path: '/profile', component: ProfileView, meta: { requiresAuth: true } },
   {
     path: '/:pathMatch(.*)*',
     component: NotFound,

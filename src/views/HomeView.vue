@@ -1,9 +1,9 @@
 <template>
   <the-hero />
-  <customer-slider />
+  <!-- <customer-slider /> -->
 </template>
 
 <script setup>
 import TheHero from '@/components/ui/TheHero.vue';
-import CustomerSlider from '@/components/ui/CustomerSlider.vue';
+// import CustomerSlider from '@/components/ui/CustomerSlider.vue';
 </script>
