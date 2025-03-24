@@ -1,6 +1,6 @@
 <template>
-  <v-container>
-    <v-card v-if="hasProfileInfo" class="pa-5 mx-auto" max-width="600">
+  <v-container v-if="hasProfileInfo">
+    <v-card class="pa-5 mx-auto" max-width="600">
       <v-card-title> Profielgegevens </v-card-title>
 
       <v-card-text>
@@ -8,36 +8,37 @@
         <v-text-field
           label="Voornaam"
           v-model="profile.firstName"
-          :readonly="!isEditing"
-          :disabled="!isEditing"
+          :disabled="!isEditingProfile"
         ></v-text-field>
 
         <!-- Achternaam veld -->
         <v-text-field
           label="Achternaam"
           v-model="profile.lastName"
-          :readonly="!isEditing"
-          :disabled="!isEditing"
+          :disabled="!isEditingProfile"
         ></v-text-field>
 
         <!-- E-mail veld -->
         <v-text-field
           label="E-mail"
           v-model="profile.email"
-          :readonly="!isEditing"
-          :disabled="!isEditing"
+          :disabled="true"
         ></v-text-field>
       </v-card-text>
 
       <v-card-actions class="d-flex justify-end">
-        <v-btn color="primary" @click="toggleEdit">
-          <v-icon left>{{ isEditing ? 'mdi-check' : 'mdi-pencil' }}</v-icon>
-          {{ isEditing ? 'Opslaan' : 'Bewerken' }}
+        <v-btn color="primary" @click="toggleEditProfile">
+          <v-icon left>{{
+            isEditingProfile ? 'mdi-check' : 'mdi-pencil'
+          }}</v-icon>
+          {{ isEditingProfile ? 'Opslaan' : 'Bewerken' }}
         </v-btn>
       </v-card-actions>
     </v-card>
+  </v-container>
 
-    <v-card v-if="hasCompanyInfo" class="pa-5 mx-auto" max-width="600">
+  <v-container v-if="hasCompanyInfo">
+    <v-card class="pa-5 mx-auto" max-width="600">
       <v-card-title> Bedrijfsgegevens </v-card-title>
 
       <v-card-text>
@@ -45,16 +46,14 @@
         <v-text-field
           label="Bedrijfsnaam"
           v-model="company.name"
-          :readonly="!isEditing"
-          :disabled="!isEditing"
+          :disabled="!isEditingCompany"
         ></v-text-field>
 
         <!-- Adres veld -->
         <v-text-field
           label="Adres"
-          v-model="company.adress"
-          :readonly="!isEditing"
-          :disabled="!isEditing"
+          v-model="company.address"
+          :disabled="!isEditingCompany"
         ></v-text-field>
 
         <!-- Postcode & Plaats veld -->
@@ -63,45 +62,53 @@
             <v-text-field
               label="Postcode"
               v-model="company.zip"
-              :readonly="!isEditing"
-              :disabled="!isEditing"
+              :disabled="!isEditingCompany"
             ></v-text-field>
           </v-col>
           <v-col>
             <v-text-field
               label="Plaats"
               v-model="company.city"
-              :readonly="!isEditing"
-              :disabled="!isEditing"
+              :disabled="!isEditingCompany"
             ></v-text-field>
           </v-col>
         </v-row>
       </v-card-text>
 
       <v-card-actions class="d-flex justify-end">
-        <v-btn color="primary" @click="toggleEdit">
-          <v-icon left>{{ isEditing ? 'mdi-check' : 'mdi-pencil' }}</v-icon>
-          {{ isEditing ? 'Opslaan' : 'Bewerken' }}
+        <v-btn color="primary" @click="toggleEditCompany">
+          <v-icon left>{{
+            isEditingCompany ? 'mdi-check' : 'mdi-pencil'
+          }}</v-icon>
+          {{ isEditingCompany ? 'Opslaan' : 'Bewerken' }}
         </v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
+
+  <v-snackbar v-model="snackbar" :timeout="3000" location="bottom center">
+    {{ snackbarText }}
+  </v-snackbar>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { ref as dbRef, onValue } from 'firebase/database';
+import { getAuth, onAuthStateChanged, updateProfile } from 'firebase/auth';
+import { ref as dbRef, onValue, off, set } from 'firebase/database';
 import { db } from '@/firebase';
 
 const auth = getAuth();
-const route = useRouter();
+const router = useRouter();
 
 const user = ref(null);
-const isEditing = ref(false);
+
+const isEditingProfile = ref(false);
+const isEditingCompany = ref(false);
+
 const hasProfileInfo = ref(false);
 const hasCompanyInfo = ref(false);
+
 const profile = ref({
   firstName: '',
   lastName: '',
@@ -109,17 +116,58 @@ const profile = ref({
 });
 const company = ref({
   name: '',
-  adress: '',
+  address: '',
   zip: '',
   city: '',
 });
 
-const toggleEdit = () => {
-  if (isEditing.value) {
-    // Hier zou je de data opslaan (bijvoorbeeld naar Firebase)
-    console.log('Opgeslagen profiel:', profile.value);
+const snackbar = ref(false);
+const snackbarText = ref('');
+
+let unsubscribeAuth = null;
+let companyRef = null;
+
+const toggleEditProfile = async () => {
+  if (isEditingProfile.value) {
+    await saveProfileToFirebase();
   }
-  isEditing.value = !isEditing.value;
+  isEditingProfile.value = !isEditingProfile.value;
+};
+
+const toggleEditCompany = async () => {
+  if (isEditingCompany.value) {
+    await saveCompanyToFirebase();
+  }
+  isEditingCompany.value = !isEditingCompany.value;
+};
+
+const saveProfileToFirebase = async () => {
+  if (!user.value) return;
+
+  const displayName = `${profile.value.firstName} ${profile.value.lastName}`;
+
+  try {
+    await updateProfile(user.value, {
+      displayName: displayName,
+    });
+    showSnackbar('Profielgegevens opgeslagen!');
+  } catch (error) {
+    showSnackbar('Fout bij opslaan profielgegevens.');
+    console.error('Fout bij opslaan profiel:', error.message);
+  }
+};
+
+const saveCompanyToFirebase = async () => {
+  if (!user.value) return;
+
+  const refPath = dbRef(db, `companies/${user.value.uid}`);
+  try {
+    await set(refPath, company.value);
+    showSnackbar('Bedrijfsgegevens opgeslagen!');
+  } catch (error) {
+    showSnackbar('Fout bij opslaan bedrijfsgegevens.');
+    console.error('Fout bij opslaan bedrijf:', error.message);
+  }
 };
 
 const getFirstAndLastName = (fullName) => {
@@ -131,14 +179,14 @@ const getFirstAndLastName = (fullName) => {
 };
 
 const getCompanyData = (userId) => {
-  const userRef = dbRef(db, `companies/${userId}`);
+  const companyRef = dbRef(db, `companies/${userId}`);
 
-  onValue(userRef, (snapshot) => {
+  onValue(companyRef, (snapshot) => {
     if (snapshot.exists()) {
       hasCompanyInfo.value = true;
 
       company.value.name = snapshot.val().name;
-      company.value.adress = snapshot.val().address;
+      company.value.address = snapshot.val().address;
       company.value.zip = snapshot.val().zip;
       company.value.city = snapshot.val().city;
     } else {
@@ -148,32 +196,42 @@ const getCompanyData = (userId) => {
   });
 };
 
+const showSnackbar = (message) => {
+  snackbarText.value = message;
+  snackbar.value = true;
+};
+
 onMounted(() => {
-  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-    if (currentUser) {
-      user.value = currentUser;
-      hasProfileInfo.value = true;
-
-      const { firstName, lastName } = getFirstAndLastName(
-        currentUser.displayName || ''
-      );
-
-      profile.value.firstName = firstName;
-      profile.value.lastName = lastName;
-      profile.value.email = currentUser.email;
-
-      getCompanyData(currentUser.uid);
-    } else {
-      hasProfileInfo.value = false;
-      hasCompanyInfo.value = false;
-
-      route.push('/');
-      console.log('User logged out');
-    }
+  unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
+    user.value = currentUser;
   });
+});
 
-  onUnmounted(() => {
-    unsubscribe();
-  });
+watch(user, (newUser) => {
+  if (newUser) {
+    hasProfileInfo.value = true;
+
+    const { firstName, lastName } = getFirstAndLastName(
+      newUser.displayName || ''
+    );
+    profile.value.firstName = firstName;
+    profile.value.lastName = lastName;
+    profile.value.email = newUser.email;
+
+    getCompanyData(newUser.uid);
+  } else {
+    hasProfileInfo.value = false;
+    hasCompanyInfo.value = false;
+    router.push('/login');
+  }
+});
+
+onUnmounted(() => {
+  if (unsubscribeAuth) {
+    unsubscribeAuth();
+  }
+  if (companyRef) {
+    off(companyRef);
+  }
 });
 </script>
