@@ -1,36 +1,34 @@
 <template>
-  <v-card class="mx-auto pa-4" max-width="600">
-    <v-card-title>Account verwijderen</v-card-title>
-    <v-card-actions class="d-flex justify-end">
-      <v-btn color="error" @click="dialog = true" variant="elevated"
-        >Verwijder account</v-btn
-      >
-    </v-card-actions>
+  <v-card-title>Account verwijderen</v-card-title>
+  <v-card-actions class="d-flex justify-end">
+    <v-btn color="error" @click="dialog = true" variant="elevated"
+      >Verwijder account</v-btn
+    >
+  </v-card-actions>
 
-    <v-dialog v-model="dialog" max-width="500">
-      <v-card>
-        <v-card-title class="text-h6">Bevestig met wachtwoord</v-card-title>
-        <v-card-text>
-          <p>
-            Om je account te verwijderen moet je je wachtwoord opnieuw invoeren.
-          </p>
-          <v-text-field
-            v-model="password"
-            label="Wachtwoord"
-            type="password"
-            :disabled="loading"
-          />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn @click="dialog = false" variant="text">Annuleren</v-btn>
-          <v-btn color="error" @click="deleteAccount" :loading="loading">
-            Verwijder
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-card>
+  <v-dialog v-model="dialog" max-width="500">
+    <v-card>
+      <v-card-title class="text-h6">Bevestig met wachtwoord</v-card-title>
+      <v-card-text>
+        <p>
+          Om je account te verwijderen moet je je wachtwoord opnieuw invoeren.
+        </p>
+        <v-text-field
+          v-model="password"
+          label="Wachtwoord"
+          type="password"
+          :disabled="loading"
+        />
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn @click="dialog = false" variant="text">Annuleren</v-btn>
+        <v-btn color="error" @click="deleteAccount" :loading="loading">
+          Verwijder
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup>

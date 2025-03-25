@@ -1,9 +1,18 @@
 <template>
   <v-container>
-    <profile-section @notify="showSnackbar" />
-    <company-section @notify="showSnackbar" />
-    <delete-account @notify="showSnackbar" />
-    <!-- TODO: feature toevoegen voor wijzigen van email en wachtwoord -->
+    <v-card class="pa-5 mx-auto" max-width="600">
+      <profile-section @notify="showSnackbar" />
+
+      <br />
+
+      <company-section @notify="showSnackbar" />
+
+      <br />
+
+      <delete-account @notify="showSnackbar" />
+
+      <!-- TODO: feature toevoegen voor wijzigen van email en wachtwoord -->
+    </v-card>
   </v-container>
 
   <v-snackbar v-model="snackbar" :timeout="3000" location="bottom center">

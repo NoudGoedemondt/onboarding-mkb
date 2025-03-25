@@ -1,28 +1,26 @@
 <template>
-  <v-card class="pa-5 mx-auto" max-width="600">
-    <v-card-title> Profielgegevens </v-card-title>
+  <v-card-title> Profielgegevens </v-card-title>
 
-    <v-card-text>
-      <v-text-field
-        label="Voornaam"
-        v-model="profile.firstName"
-        :disabled="!isEditing"
-      ></v-text-field>
+  <v-card-text>
+    <v-text-field
+      label="Voornaam"
+      v-model="profile.firstName"
+      :disabled="!isEditing"
+    ></v-text-field>
 
-      <v-text-field
-        label="Achternaam"
-        v-model="profile.lastName"
-        :disabled="!isEditing"
-      ></v-text-field>
-    </v-card-text>
+    <v-text-field
+      label="Achternaam"
+      v-model="profile.lastName"
+      :disabled="!isEditing"
+    ></v-text-field>
+  </v-card-text>
 
-    <v-card-actions class="d-flex justify-end">
-      <v-btn color="primary" @click="toggleEdit">
-        <v-icon left>{{ isEditing ? 'mdi-check' : 'mdi-pencil' }}</v-icon>
-        {{ isEditing ? 'Opslaan' : 'Bewerken' }}
-      </v-btn>
-    </v-card-actions>
-  </v-card>
+  <v-card-actions class="d-flex justify-end">
+    <v-btn color="primary" @click="toggleEdit">
+      <v-icon left>{{ isEditing ? 'mdi-check' : 'mdi-pencil' }}</v-icon>
+      {{ isEditing ? 'Opslaan' : 'Bewerken' }}
+    </v-btn>
+  </v-card-actions>
 </template>
 
 <script setup>

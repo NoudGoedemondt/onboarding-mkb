@@ -1,45 +1,43 @@
 <template>
-  <v-card class="pa-5 mx-auto" max-width="600">
-    <v-card-title> Bedrijfsgegevens </v-card-title>
+  <v-card-title> Bedrijfsgegevens </v-card-title>
 
-    <v-card-text>
-      <v-text-field
-        label="Bedrijfsnaam"
-        v-model="company.name"
-        :disabled="!isEditing"
-      ></v-text-field>
+  <v-card-text>
+    <v-text-field
+      label="Bedrijfsnaam"
+      v-model="company.name"
+      :disabled="!isEditing"
+    ></v-text-field>
 
-      <v-text-field
-        label="Adres"
-        v-model="company.address"
-        :disabled="!isEditing"
-      ></v-text-field>
+    <v-text-field
+      label="Adres"
+      v-model="company.address"
+      :disabled="!isEditing"
+    ></v-text-field>
 
-      <v-row>
-        <v-col>
-          <v-text-field
-            label="Postcode"
-            v-model="company.zip"
-            :disabled="!isEditing"
-          ></v-text-field>
-        </v-col>
-        <v-col>
-          <v-text-field
-            label="Plaats"
-            v-model="company.city"
-            :disabled="!isEditing"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-    </v-card-text>
+    <v-row>
+      <v-col>
+        <v-text-field
+          label="Postcode"
+          v-model="company.zip"
+          :disabled="!isEditing"
+        ></v-text-field>
+      </v-col>
+      <v-col>
+        <v-text-field
+          label="Plaats"
+          v-model="company.city"
+          :disabled="!isEditing"
+        ></v-text-field>
+      </v-col>
+    </v-row>
+  </v-card-text>
 
-    <v-card-actions class="d-flex justify-end">
-      <v-btn color="primary" @click="toggleEdit">
-        <v-icon left>{{ isEditing ? 'mdi-check' : 'mdi-pencil' }}</v-icon>
-        {{ isEditing ? 'Opslaan' : 'Bewerken' }}
-      </v-btn>
-    </v-card-actions>
-  </v-card>
+  <v-card-actions class="d-flex justify-end">
+    <v-btn color="primary" @click="toggleEdit">
+      <v-icon left>{{ isEditing ? 'mdi-check' : 'mdi-pencil' }}</v-icon>
+      {{ isEditing ? 'Opslaan' : 'Bewerken' }}
+    </v-btn>
+  </v-card-actions>
 </template>
 
 <script setup>
