@@ -14,12 +14,6 @@
         v-model="profile.lastName"
         :disabled="!isEditing"
       ></v-text-field>
-
-      <v-text-field
-        label="E-mail"
-        v-model="profile.email"
-        :disabled="true"
-      ></v-text-field>
     </v-card-text>
 
     <v-card-actions class="d-flex justify-end">
@@ -43,7 +37,6 @@ const isEditing = ref(false);
 const profile = ref({
   firstName: '',
   lastName: '',
-  email: '',
 });
 
 const toggleEdit = async () => {
@@ -70,7 +63,6 @@ onMounted(() => {
     const [firstName, ...lastParts] = (user.displayName || '').split(' ');
     profile.value.firstName = firstName;
     profile.value.lastName = lastParts.join(' ');
-    profile.value.email = user.email;
   }
 });
 </script>

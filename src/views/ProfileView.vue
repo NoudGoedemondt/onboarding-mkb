@@ -1,7 +1,9 @@
 <template>
   <v-container>
-    <profile-card @notify="showSnackbar" />
-    <company-card @notify="showSnackbar" />
+    <profile-section @notify="showSnackbar" />
+    <company-section @notify="showSnackbar" />
+    <delete-account @notify="showSnackbar" />
+    <!-- TODO: feature toevoegen voor wijzigen van email en wachtwoord -->
   </v-container>
 
   <v-snackbar v-model="snackbar" :timeout="3000" location="bottom center">
@@ -10,8 +12,9 @@
 </template>
 
 <script setup>
-import ProfileCard from '@/components/profile/ProfileCard.vue';
-import CompanyCard from '@/components/profile/CompanyCard.vue';
+import ProfileSection from '@/components/profile/ProfileSection.vue';
+import CompanySection from '@/components/profile/CompanySection.vue';
+import DeleteAccount from '@/components/profile/DeleteAccount.vue';
 
 import { ref } from 'vue';
 
