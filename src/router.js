@@ -1,31 +1,47 @@
 import { createRouter, createWebHistory } from 'vue-router';
-
-import HomeView from './views/HomeView.vue';
-import ModuleView from './views/ModuleView.vue';
-import BrancheView from './views/BrancheView.vue';
-import LoginView from './views/LoginView.vue';
-import RegisterView from './views/RegisterView.vue';
-import CompanyFormView from './views/CompanyFormView.vue';
-import ProfileView from './views/ProfileView.vue';
-import NotFound from './views/NotFound.vue';
-
 import { auth } from '@/firebase';
 
 const routes = [
-  { path: '/', component: HomeView },
-  { path: '/modules', component: ModuleView },
-  { path: '/branches', component: BrancheView },
-  { path: '/login', component: LoginView },
-  { path: '/register', component: RegisterView },
+  { path: '/', component: () => import('./views/HomeView.vue') },
+  { path: '/modules', component: () => import('./views/ModuleView.vue') },
+  { path: '/branches', component: () => import('./views/BrancheView.vue') },
+  { path: '/login', component: () => import('./views/LoginView.vue') },
+  { path: '/register', component: () => import('./views/RegisterView.vue') },
   {
-    path: '/company-info',
-    component: CompanyFormView,
+    path: '/profile',
+    component: () => import('./views/ProfileView.vue'),
     meta: { requiresAuth: true },
   },
-  { path: '/profile', component: ProfileView, meta: { requiresAuth: true } },
+  {
+    path: '/onboarding',
+    component: () => import('./views/onboarding/OnboardingShellView.vue'),
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: 'company-info',
+        name: 'CompanyInfo',
+        component: () => import('./views/onboarding/CompanyFormView.vue'),
+      },
+      {
+        path: 'usage-info',
+        name: 'UsageInfo',
+        component: () => import('./views/onboarding/UsageInfoView.vue'),
+      },
+      {
+        path: 'workflow-questions',
+        name: 'WorkflowQuestions',
+        component: () => import('./views/onboarding/WorkflowQuestionsView.vue'),
+      },
+      {
+        path: 'summary',
+        name: 'Summary',
+        component: () => import('./views/onboarding/WorkflowSummaryView.vue'),
+      },
+    ],
+  },
   {
     path: '/:pathMatch(.*)*',
-    component: NotFound,
+    component: () => import('./views/NotFound.vue'),
   },
 ];
 

@@ -4,7 +4,6 @@
       <v-card-title class="text-h5">Bedrijfsgegevens</v-card-title>
       <v-card-text>
         <v-form ref="form" v-model="valid" lazy-validation>
-          <!-- Bedrijfsnaam -->
           <v-text-field
             v-model="company.name"
             label="Bedrijfsnaam"
@@ -12,7 +11,6 @@
             required
           ></v-text-field>
 
-          <!-- Adres -->
           <v-text-field
             v-model="company.address"
             label="Adres"
@@ -20,7 +18,6 @@
             required
           ></v-text-field>
 
-          <!-- Postcode & Plaats -->
           <v-row>
             <v-col cols="6">
               <v-text-field
@@ -39,14 +36,6 @@
               ></v-text-field>
             </v-col>
           </v-row>
-
-          <!-- Aantal medewerkers -->
-          <v-radio-group v-model="company.employees" label="Aantal medewerkers">
-            <v-radio label="1 tot 5 medewerkers" value="1-5"></v-radio>
-            <v-radio label="6 tot 10 medewerkers" value="6-10"></v-radio>
-            <v-radio label="11 tot 25 medewerkers" value="11-25"></v-radio>
-            <v-radio label="Meer dan 25 medewerkers" value="25+"></v-radio>
-          </v-radio-group>
         </v-form>
       </v-card-text>
 
@@ -79,7 +68,6 @@ const company = ref({
   address: '',
   zip: '',
   city: '',
-  employees: '',
 });
 
 const required = (v) => !!v || 'Dit veld is verplicht';
@@ -99,9 +87,6 @@ const submitForm = async () => {
     address: company.value.address,
     zip: company.value.zip,
     city: company.value.city,
-    employees: company.value.employees,
-    owner: user.value.uid, // Koppel het bedrijf aan de gebruiker
-    createdAt: new Date().toISOString(),
   };
 
   try {
@@ -109,8 +94,6 @@ const submitForm = async () => {
     const companyRef = dbRef(db, `companies/${user.value.uid}`);
     await set(companyRef, companyData);
     console.log('Bedrijf opgeslagen:', companyData);
-
-    router.push('/');
   } catch (error) {
     console.error('Fout bij opslaan bedrijfsgegevens:', error);
     alert('Er is een fout opgetreden bij het opslaan van de bedrijfsgegevens.');
@@ -131,7 +114,6 @@ onMounted(async () => {
 
     if (snapshot.exists()) {
       companyExists.value = true;
-      router.push('/');
     }
   });
 });
