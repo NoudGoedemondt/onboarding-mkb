@@ -45,7 +45,7 @@
               color="primary"
               class="text-body-1 px-6"
               variant="elevated"
-              to="/onboarding"
+              to="/onboarding/company-info"
             >
               Probeer Gratis
             </v-btn>

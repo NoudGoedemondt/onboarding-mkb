@@ -1,4 +1,7 @@
 <template>
-  <h4>OnboardingShellView</h4>
-  <router-view />
+  <onboarding-stepper />
 </template>
+
+<script setup>
+import OnboardingStepper from '@/components/onboarding/OnboardingStepper.vue';
+</script>
