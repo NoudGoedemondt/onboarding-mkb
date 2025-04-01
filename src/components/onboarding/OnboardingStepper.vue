@@ -2,11 +2,11 @@
   <v-stepper v-model="step">
     <v-stepper-header>
       <v-stepper-item
-        v-for="(step, index) in steps"
-        :key="step.route"
-        :title="step.label"
+        v-for="(item, index) in steps"
+        :key="item.route"
+        :title="item.label"
         :value="index + 1"
-        :complete="step > index"
+        :complete="step > index + 1"
         @click="goToStep(index + 1)"
       />
     </v-stepper-header>

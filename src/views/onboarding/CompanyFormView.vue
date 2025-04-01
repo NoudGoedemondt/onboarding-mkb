@@ -2,6 +2,7 @@
   <v-container v-if="user">
     <v-card class="pa-5 mx-auto" max-width="600">
       <v-card-title class="text-h5">Bedrijfsgegevens</v-card-title>
+
       <v-card-text>
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-text-field
@@ -9,15 +10,13 @@
             label="Bedrijfsnaam"
             :rules="[required]"
             required
-          ></v-text-field>
-
+          />
           <v-text-field
             v-model="company.address"
             label="Adres"
             :rules="[required]"
             required
-          ></v-text-field>
-
+          />
           <v-row>
             <v-col cols="6">
               <v-text-field
@@ -25,7 +24,7 @@
                 label="Postcode"
                 :rules="[required, validZip]"
                 required
-              ></v-text-field>
+              />
             </v-col>
             <v-col cols="6">
               <v-text-field
@@ -33,7 +32,7 @@
                 label="Plaats"
                 :rules="[required]"
                 required
-              ></v-text-field>
+              />
             </v-col>
           </v-row>
         </v-form>
@@ -45,9 +44,14 @@
         </v-btn>
       </v-card-actions>
     </v-card>
+
+    <v-snackbar v-model="snackbar" :timeout="3000" :color="snackbarColor">
+      {{ snackbarText }}
+    </v-snackbar>
   </v-container>
+
   <v-container v-else>
-    <v-progress-circular color="purple" indeterminate></v-progress-circular>
+    <v-progress-circular color="purple" indeterminate />
   </v-container>
 </template>
 
@@ -60,9 +64,8 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 const user = ref(null);
-const companyExists = ref(false);
-
 const valid = ref(false);
+
 const company = ref({
   name: '',
   address: '',
@@ -70,37 +73,36 @@ const company = ref({
   city: '',
 });
 
+const snackbar = ref(false);
+const snackbarText = ref('');
+const snackbarColor = ref('success');
+
+const showSnackbar = (message, color = 'success') => {
+  snackbarText.value = message;
+  snackbarColor.value = color;
+  snackbar.value = true;
+};
+
 const required = (v) => !!v || 'Dit veld is verplicht';
 const validZip = (v) =>
   /^[1-9][0-9]{3}\s?[a-zA-Z]{2}$/.test(v) || 'Ongeldige postcode';
 
 const submitForm = async () => {
-  if (!valid.value) return;
+  if (!valid.value || !user.value) return;
 
-  if (!user.value) {
-    alert('Je moet ingelogd zijn om dit te kunnen doen!');
-    return;
-  }
-
-  const companyData = {
-    name: company.value.name,
-    address: company.value.address,
-    zip: company.value.zip,
-    city: company.value.city,
-  };
+  const companyData = { ...company.value };
 
   try {
-    console.log(user.value.uid);
     const companyRef = dbRef(db, `companies/${user.value.uid}`);
     await set(companyRef, companyData);
-    console.log('Bedrijf opgeslagen:', companyData);
+    showSnackbar('Bedrijf succesvol opgeslagen');
   } catch (error) {
     console.error('Fout bij opslaan bedrijfsgegevens:', error);
-    alert('Er is een fout opgetreden bij het opslaan van de bedrijfsgegevens.');
+    showSnackbar('Fout bij opslaan bedrijfsgegevens', 'error');
   }
 };
 
-onMounted(async () => {
+onMounted(() => {
   auth.onAuthStateChanged(async (firebaseUser) => {
     user.value = firebaseUser;
 
@@ -113,7 +115,7 @@ onMounted(async () => {
     const snapshot = await get(companyRef);
 
     if (snapshot.exists()) {
-      companyExists.value = true;
+      company.value = snapshot.val();
     }
   });
 });
