@@ -82,11 +82,15 @@ const submit = async () => {
 
 if (user) {
   const companyRef = dbRef(db, `companies/${user.uid}`);
-  get(companyRef).then((snapshot) => {
-    if (snapshot.exists()) {
-      company.value = snapshot.val();
-    }
-  });
+  get(companyRef)
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        company.value = snapshot.val();
+      }
+    })
+    .catch((error) => {
+      console.error('Fout bij ophalen bedrijsgegevens:', error.message);
+    });
 }
 
 defineExpose({ submit });
