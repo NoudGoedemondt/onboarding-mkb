@@ -102,6 +102,7 @@ onMounted(() => {
 const logout = async () => {
   try {
     await signOut(auth);
+    location.reload();
     user.value = null;
   } catch (error) {
     console.error('Logout error:', error.message);
