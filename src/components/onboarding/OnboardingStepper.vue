@@ -12,7 +12,13 @@
     </v-stepper-header>
 
     <v-stepper-window>
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <component
+          :is="Component"
+          ref="currentComponentRef"
+          @notify="showSnackbar"
+        />
+      </router-view>
     </v-stepper-window>
 
     <v-stepper-actions
@@ -22,6 +28,10 @@
       @click:prev="prevStep"
     />
   </v-stepper>
+
+  <v-snackbar v-model="snackbar" :timeout="3000" location="bottom center">
+    {{ snackbarText }}
+  </v-snackbar>
 </template>
 
 <script setup>
@@ -39,6 +49,15 @@ const steps = [
 ];
 
 const step = ref(1);
+const currentComponentRef = ref(null);
+
+const snackbar = ref(false);
+const snackbarText = ref('');
+
+const showSnackbar = (message) => {
+  snackbarText.value = message;
+  snackbar.value = true;
+};
 
 watch(
   () => route.path,
@@ -49,7 +68,12 @@ watch(
   { immediate: true }
 );
 
-const nextStep = () => {
+const nextStep = async () => {
+  if (currentComponentRef.value?.submit) {
+    const success = await currentComponentRef.value.submit();
+    if (!success) return;
+  }
+
   const next = steps[step.value];
   if (next) router.push(`/onboarding/${next.route}`);
 };
