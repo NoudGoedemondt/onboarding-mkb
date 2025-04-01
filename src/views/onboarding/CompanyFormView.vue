@@ -38,9 +38,7 @@
     </v-card>
   </v-container>
 
-  <v-container v-else>
-    <v-progress-circular color="purple" indeterminate />
-  </v-container>
+  <v-container v-else> Geen gebruiker gevonden. Log in. </v-container>
 </template>
 
 <script setup>
