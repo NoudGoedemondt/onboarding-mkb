@@ -9,6 +9,8 @@
             label="Waarvoor wil je de applicatie gebruiken?"
             :items="purposes"
             :rules="[required]"
+            :loading="loading"
+            :disabled="loading"
             required
           />
 
@@ -17,6 +19,8 @@
             v-model="usage.users"
             label="Hoeveel mensen gaan ermee werken?"
             :rules="[required]"
+            :loading="loading"
+            :disabled="loading"
           >
             <v-radio label="1-5" value="1-5" />
             <v-radio label="6-10" value="6-10" />
@@ -29,6 +33,8 @@
             v-model="usage.notes"
             label="Toelichting (optioneel)"
             auto-grow
+            :loading="loading"
+            :disabled="loading"
           />
         </v-form>
       </v-card-text>
@@ -39,7 +45,7 @@
 </template>
 
 <script setup>
-import { ref, defineExpose, defineEmits } from 'vue';
+import { ref, defineExpose, defineEmits, onMounted } from 'vue';
 import { auth, db } from '@/firebase';
 import { ref as dbRef, set, get } from 'firebase/database';
 
@@ -49,6 +55,7 @@ const user = auth.currentUser;
 
 const valid = ref(false);
 const formRef = ref(null);
+const loading = ref(true);
 
 const usage = ref({
   purpose: '',
@@ -82,18 +89,21 @@ const submit = async () => {
   }
 };
 
-if (user) {
-  const usageRef = dbRef(db, `usageInfo/${user.uid}`);
-  get(usageRef)
-    .then((snapshot) => {
+onMounted(async () => {
+  if (user) {
+    try {
+      const usageRef = dbRef(db, `usageInfo/${user.uid}`);
+      const snapshot = await get(usageRef);
       if (snapshot.exists()) {
         usage.value = snapshot.val();
       }
-    })
-    .catch((error) => {
+    } catch (error) {
       console.error('Fout bij ophalen usageInfo:', error.message);
-    });
-}
+    } finally {
+      loading.value = false;
+    }
+  }
+});
 
 defineExpose({ submit });
 </script>

@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-import { ref, defineExpose, defineEmits } from 'vue';
+import { ref, defineExpose, defineEmits, onMounted } from 'vue';
 import { auth, db } from '@/firebase';
 import { ref as dbRef, set, get } from 'firebase/database';
 
@@ -60,7 +60,7 @@ const user = auth.currentUser;
 
 const valid = ref(false);
 const formRef = ref(null);
-const loading = ref(false);
+const loading = ref(true);
 
 const company = ref({
   name: '',
@@ -89,23 +89,22 @@ const submit = async () => {
   }
 };
 
-if (user) {
-  const companyRef = dbRef(db, `companies/${user.uid}`);
-  loading.value = true;
-
-  get(companyRef)
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        company.value = snapshot.val();
-      }
-    })
-    .catch((error) => {
-      console.error('Fout bij ophalen bedrijfsgegevens:', error.message);
-    })
-    .finally(() => {
-      loading.value = false;
-    });
-}
-
+onMounted(() => {
+  if (user) {
+    const companyRef = dbRef(db, `companies/${user.uid}`);
+    get(companyRef)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          company.value = snapshot.val();
+        }
+      })
+      .catch((error) => {
+        console.error('Fout bij ophalen bedrijfsgegevens:', error.message);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  }
+});
 defineExpose({ submit });
 </script>
