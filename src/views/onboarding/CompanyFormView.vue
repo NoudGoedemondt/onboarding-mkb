@@ -7,12 +7,16 @@
             v-model="company.name"
             label="Bedrijfsnaam"
             :rules="[required]"
+            :loading="loading"
+            :disabled="loading"
             required
           />
           <v-text-field
             v-model="company.address"
             label="Adres"
             :rules="[required]"
+            :loading="loading"
+            :disabled="loading"
             required
           />
           <v-row>
@@ -21,6 +25,8 @@
                 v-model="company.zip"
                 label="Postcode"
                 :rules="[required, validZip]"
+                :loading="loading"
+                :disabled="loading"
                 required
               />
             </v-col>
@@ -29,6 +35,8 @@
                 v-model="company.city"
                 label="Plaats"
                 :rules="[required]"
+                :loading="loading"
+                :disabled="loading"
                 required
               />
             </v-col>
@@ -52,6 +60,7 @@ const user = auth.currentUser;
 
 const valid = ref(false);
 const formRef = ref(null);
+const loading = ref(false);
 
 const company = ref({
   name: '',
@@ -82,6 +91,8 @@ const submit = async () => {
 
 if (user) {
   const companyRef = dbRef(db, `companies/${user.uid}`);
+  loading.value = true;
+
   get(companyRef)
     .then((snapshot) => {
       if (snapshot.exists()) {
@@ -89,7 +100,10 @@ if (user) {
       }
     })
     .catch((error) => {
-      console.error('Fout bij ophalen bedrijsgegevens:', error.message);
+      console.error('Fout bij ophalen bedrijfsgegevens:', error.message);
+    })
+    .finally(() => {
+      loading.value = false;
     });
 }
 
