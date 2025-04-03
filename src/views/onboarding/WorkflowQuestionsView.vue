@@ -1,32 +1,30 @@
 <template>
   <v-container v-if="user">
     <v-card class="pa-5 mx-auto" max-width="700">
-      <v-card-title class="text-h5">Workflow Vragenlijst</v-card-title>
-
       <v-card-text>
         <v-form ref="formRef" v-model="valid" lazy-validation>
           <!-- Afspraakbeheer -->
+          <v-subheader>Afspraakbeheer</v-subheader>
+          <v-divider class="mb-3" />
+
           <v-select
             v-model="workflow.selfSchedule"
             label="Mag de klant zelf een afspraak inplannen?"
             :items="['Ja', 'Nee']"
             :rules="[required]"
           />
-
           <v-select
             v-model="workflow.confirmAppointment"
             label="Moet de klant de afspraak bevestigen?"
             :items="['Ja', 'Nee']"
             :rules="[required]"
           />
-
           <v-select
             v-model="workflow.followUp"
             label="Automatische opvolging als de klant niet reageert?"
             :items="['Ja', 'Nee']"
             :rules="[required]"
           />
-
           <v-select
             v-model="workflow.revisit"
             label="Moeten vervolgbezoeken worden ingepland?"
@@ -35,13 +33,15 @@
           />
 
           <!-- Klantcommunicatie -->
+          <v-subheader class="mt-5">Klantcommunicatie</v-subheader>
+          <v-divider class="mb-3" />
+
           <v-select
             v-model="workflow.reminders"
             label="Wil je herinneringen sturen voorafgaand aan de afspraak?"
             :items="['Ja', 'Nee']"
             :rules="[required]"
           />
-
           <v-select
             v-model="workflow.afterMessage"
             label="Wat ontvangt de klant na afronding van de werkopdracht?"
@@ -50,13 +50,15 @@
           />
 
           <!-- Uitvoering -->
+          <v-subheader class="mt-5">Uitvoering</v-subheader>
+          <v-divider class="mb-3" />
+
           <v-select
             v-model="workflow.preInspection"
             label="Is een schouwing vereist vóór uitvoering?"
             :items="['Ja', 'Nee']"
             :rules="[required]"
           />
-
           <v-select
             v-model="workflow.qcAfter"
             label="Moet er een kwaliteitscontrole of goedkeuring volgen?"
@@ -65,6 +67,9 @@
           />
 
           <!-- Sluiting werkopdracht -->
+          <v-subheader class="mt-5">Sluiting van de werkopdracht</v-subheader>
+          <v-divider class="mb-3" />
+
           <v-text-field
             v-model="workflow.autoCloseDays"
             label="Na hoeveel dagen moet een opdracht automatisch worden gesloten?"
