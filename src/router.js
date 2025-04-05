@@ -23,9 +23,9 @@ const routes = [
         component: () => import('./views/onboarding/CompanyFormView.vue'),
       },
       {
-        path: 'usage-info',
-        name: 'UsageInfo',
-        component: () => import('./views/onboarding/UsageInfoView.vue'),
+        path: 'upload-logo',
+        name: 'UploadLogo',
+        component: () => import('./views/onboarding/UploadLogoView.vue'),
       },
       {
         path: 'workflow-questions',

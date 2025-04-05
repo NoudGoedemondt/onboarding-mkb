@@ -48,7 +48,7 @@ const route = useRoute();
 
 const steps = [
   { label: 'Bedrijfsinfo', route: 'company-info' },
-  { label: 'Gebruik', route: 'usage-info' },
+  { label: 'Logo', route: 'upload-logo' },
   { label: 'Workflow vragenlijst', route: 'workflow-questions' },
   { label: 'Samenvatting', route: 'summary' },
 ];
