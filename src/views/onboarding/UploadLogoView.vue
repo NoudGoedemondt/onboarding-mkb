@@ -28,8 +28,6 @@
 </template>
 
 <script setup>
-//TODO: No functionality available for reuploading the logo
-
 import { ref, watch, defineExpose, defineEmits, onMounted } from 'vue';
 import { auth, db } from '@/firebase';
 import { ref as dbRef, set, get } from 'firebase/database';
