@@ -1,175 +1,142 @@
 <template>
-  <v-container v-if="user">
+  <v-container>
     <v-card class="pa-5 mx-auto" max-width="700">
+      <v-card-title class="text-h5">Workflow Vragenlijst</v-card-title>
       <v-card-text>
         <v-form ref="formRef" v-model="valid" lazy-validation>
-          <!-- Afspraakbeheer -->
-          <v-subheader>Afspraakbeheer</v-subheader>
-          <v-divider class="mb-3" />
-
-          <v-select
-            v-model="workflow.selfSchedule"
-            label="Mag de klant zelf een afspraak inplannen?"
-            :items="['Ja', 'Nee']"
-            :rules="[required]"
-            required
-            :loading="loading"
-            :disabled="loading"
-          />
-          <v-select
-            v-model="workflow.confirmAppointment"
-            label="Moet de klant de afspraak bevestigen?"
-            :items="['Ja', 'Nee']"
-            :rules="[required]"
-            required
-            :loading="loading"
-            :disabled="loading"
-          />
-          <v-select
-            v-model="workflow.followUp"
-            label="Automatische opvolging als de klant niet reageert?"
-            :items="['Ja', 'Nee']"
-            :rules="[required]"
-            required
-            :loading="loading"
-            :disabled="loading"
-          />
-          <v-select
-            v-model="workflow.revisit"
-            label="Moeten vervolgbezoeken worden ingepland?"
-            :items="['Ja', 'Nee']"
-            :rules="[required]"
-            required
-            :loading="loading"
-            :disabled="loading"
-          />
-
-          <!-- Klantcommunicatie -->
-          <v-subheader class="mt-5">Klantcommunicatie</v-subheader>
-          <v-divider class="mb-3" />
-
-          <v-select
-            v-model="workflow.reminders"
-            label="Wil je herinneringen sturen voorafgaand aan de afspraak?"
-            :items="['Ja', 'Nee']"
-            :rules="[required]"
-            required
-            :loading="loading"
-            :disabled="loading"
-          />
-          <v-select
-            v-model="workflow.afterMessage"
-            label="Wat ontvangt de klant na afronding van de werkopdracht?"
-            :items="['Samenvatting', 'Bevestiging', 'Geen bericht']"
-            :rules="[required]"
-            required
-            :loading="loading"
-            :disabled="loading"
-          />
-
-          <!-- Uitvoering -->
-          <v-subheader class="mt-5">Uitvoering</v-subheader>
-          <v-divider class="mb-3" />
-
-          <v-select
-            v-model="workflow.preInspection"
-            label="Is een schouwing vereist vóór uitvoering?"
-            :items="['Ja', 'Nee']"
-            :rules="[required]"
-            required
-            :loading="loading"
-            :disabled="loading"
-          />
-          <v-select
-            v-model="workflow.qcAfter"
-            label="Moet er een kwaliteitscontrole of goedkeuring volgen?"
-            :items="['Ja', 'Nee']"
-            :rules="[required]"
-            required
-            :loading="loading"
-            :disabled="loading"
-          />
-
-          <!-- Sluiting werkopdracht -->
-          <v-subheader class="mt-5">Sluiting van de werkopdracht</v-subheader>
-          <v-divider class="mb-3" />
-
-          <v-text-field
-            v-model="workflow.autoCloseDays"
-            label="Na hoeveel dagen moet een opdracht automatisch worden gesloten?"
-            type="number"
-            :rules="[required]"
-            required
-            :loading="loading"
-            :disabled="loading"
-          />
+          <div
+            v-for="question in visibleQuestions"
+            :key="question.key"
+            class="mb-4"
+          >
+            <v-select
+              v-if="question.type === 'select'"
+              :model-value="formData[question.key]"
+              @update:model-value="updateFormValue(question.key, $event)"
+              :label="question.label"
+              :items="question.options"
+              :rules="[required]"
+            />
+            <v-text-field
+              v-else-if="question.type === 'number'"
+              :model-value="formData[question.key]"
+              @update:model-value="
+                updateFormValue(question.key, Number($event))
+              "
+              :label="question.label"
+              type="number"
+              :rules="[required]"
+            />
+          </div>
         </v-form>
       </v-card-text>
     </v-card>
   </v-container>
-
-  <v-container v-else> Geen gebruiker gevonden. Log in. </v-container>
 </template>
 
 <script setup>
-import { ref, defineExpose, defineEmits, onMounted } from 'vue';
-import { auth, db } from '@/firebase';
-import { ref as dbRef, set, get } from 'firebase/database';
+import { ref, computed, watch, onMounted } from 'vue';
+import jsonata from 'jsonata';
 
-const emit = defineEmits(['notify']);
-
-const user = auth.currentUser;
-const formRef = ref(null);
 const valid = ref(false);
-const loading = ref(true);
-
-const workflow = ref({
-  selfSchedule: '',
-  confirmAppointment: '',
-  followUp: '',
-  revisit: '',
-  reminders: '',
-  afterMessage: '',
-  preInspection: '',
-  qcAfter: '',
-  autoCloseDays: '',
-});
-
+const formRef = ref(null);
+const formData = ref({});
+const visibleQuestionsData = ref([]);
 const required = (v) => !!v || 'Dit veld is verplicht';
 
-const submit = async () => {
-  const isValid = await formRef.value?.validate();
-  if (!isValid?.valid || !user) return false;
+// Function to explicitly update form values and trigger reactivity
+const updateFormValue = async (key, value) => {
+  console.log(`Updating ${key} with value:`, value);
+  formData.value = { ...formData.value, [key]: value };
 
-  try {
-    const refPath = dbRef(db, `workflow/${user.uid}`);
-    await set(refPath, workflow.value);
-    emit('notify', 'Workflowvragen succesvol opgeslagen!');
-    return true;
-  } catch (e) {
-    console.error('Fout bij opslaan workflowvragen:', e);
-    emit('notify', 'Fout bij opslaan workflowvragen', 'error');
-    return false;
-  }
+  // Re-evaluate questions when form data changes
+  await updateVisibleQuestions();
 };
 
-onMounted(() => {
-  if (user) {
-    const refPath = dbRef(db, `workflow/${user.uid}`);
-    get(refPath)
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          workflow.value = snapshot.val();
-        }
-      })
-      .catch((err) => {
-        console.error('Fout bij ophalen workflowdata:', err.message);
-      })
-      .finally(() => {
-        loading.value = false;
-      });
+const allQuestions = ref([
+  {
+    key: 'selfSchedule',
+    label: 'Mag de klant zelf een afspraak inplannen?',
+    type: 'select',
+    options: ['Ja', 'Nee'],
+  },
+  {
+    key: 'confirmAppointment',
+    label: 'Moet de klant de afspraak bevestigen?',
+    type: 'select',
+    options: ['Ja', 'Nee'],
+    condition: "$.selfSchedule = 'Ja'",
+  },
+  {
+    key: 'revisit',
+    label: 'Moeten vervolgbezoeken worden ingepland?',
+    type: 'select',
+    options: ['Ja', 'Nee'],
+    condition: "$.selfSchedule = 'Nee'",
+  },
+  {
+    key: 'autoCloseDays',
+    label: 'Na hoeveel dagen moet een opdracht automatisch sluiten?',
+    type: 'number',
+    condition: "$.confirmAppointment = 'Ja'",
+  },
+]);
+
+// Function to evaluate async JSONata expressions
+async function evaluateJsonata(expression, data) {
+  try {
+    const expr = jsonata(expression);
+    const result = await expr.evaluate(data);
+    console.log(`Evaluated ${expression}:`, result);
+    return result === true;
+  } catch (e) {
+    console.warn('JSONata evaluatie mislukt:', e.message);
+    return false;
   }
+}
+
+// Function to update visible questions based on form data
+async function updateVisibleQuestions() {
+  const visible = [];
+
+  for (const question of allQuestions.value) {
+    if (!question.condition) {
+      visible.push(question);
+      continue;
+    }
+
+    const shouldShow = await evaluateJsonata(
+      question.condition,
+      formData.value
+    );
+    if (shouldShow) {
+      visible.push(question);
+    }
+  }
+
+  visibleQuestionsData.value = visible;
+  console.log(
+    'Updated visible questions:',
+    visible.map((q) => q.key)
+  );
+}
+
+// Use a regular ref instead of computed for async operations
+const visibleQuestions = computed(() => {
+  return visibleQuestionsData.value;
 });
 
-defineExpose({ submit });
+// Initialize visible questions on mount
+onMounted(async () => {
+  await updateVisibleQuestions();
+});
+
+// Debug watcher
+watch(
+  formData,
+  (newVal) => {
+    console.log('Form data changed:', newVal);
+  },
+  { deep: true }
+);
 </script>
