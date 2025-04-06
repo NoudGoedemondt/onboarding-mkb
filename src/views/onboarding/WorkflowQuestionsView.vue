@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if="user">
     <v-card class="pa-5 mx-auto" max-width="700">
       <v-card-title class="text-h5">Workflow Vragenlijst</v-card-title>
       <v-card-text>
@@ -15,6 +15,8 @@
               :label="question.label"
               :items="question.options"
               :rules="[required]"
+              :loading="loading"
+              :disabled="loading"
               clearable
             />
             <v-text-field
@@ -23,6 +25,8 @@
               :label="question.label"
               type="number"
               :rules="[required]"
+              :loading="loading"
+              :disabled="loading"
             />
             <div v-else class="text-red">
               Unsupported type: {{ question.type }}
@@ -32,14 +36,22 @@
       </v-card-text>
     </v-card>
   </v-container>
+
+  <v-container v-else> Geen gebruiker gevonden. Log in. </v-container>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, defineExpose, defineEmits, onMounted } from 'vue';
 import jsonata from 'jsonata';
+import { auth, db } from '@/firebase';
+import { ref as dbRef, set, get } from 'firebase/database';
 
+const emit = defineEmits(['notify']);
+
+const user = auth.currentUser;
 const formRef = ref(null);
 const valid = ref(false);
+const loading = ref(true);
 
 const formData = ref({});
 const visibleQuestions = ref([]);
@@ -133,4 +145,38 @@ watch(
   },
   { immediate: true, deep: true }
 );
+
+const submit = async () => {
+  const isValid = await formRef.value?.validate();
+  if (!isValid?.valid || !user) return false;
+
+  try {
+    const workflowRef = dbRef(db, `workflow/${user.uid}`);
+    await set(workflowRef, formData.value);
+    emit('notify', 'Workflowvragen succesvol opgeslagen!');
+    return true;
+  } catch (e) {
+    console.error('Fout bij opslaan workflowvragen:', e);
+    emit('notify', 'Fout bij opslaan workflowvragen', 'error');
+    return false;
+  }
+};
+
+onMounted(async () => {
+  if (user) {
+    try {
+      const refPath = dbRef(db, `workflow/${user.uid}`);
+      const snapshot = await get(refPath);
+      if (snapshot.exists()) {
+        formData.value = snapshot.val();
+      }
+    } catch (err) {
+      console.error('Fout bij ophalen workflowdata:', err.message);
+    } finally {
+      loading.value = false;
+    }
+  }
+});
+
+defineExpose({ submit });
 </script>
