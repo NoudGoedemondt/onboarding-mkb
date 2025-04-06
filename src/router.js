@@ -35,7 +35,7 @@ const routes = [
       {
         path: 'summary',
         name: 'Summary',
-        component: () => import('./views/onboarding/WorkflowSummaryView.vue'),
+        component: () => import('./views/onboarding/OnboardingSummaryView.vue'),
       },
     ],
   },
