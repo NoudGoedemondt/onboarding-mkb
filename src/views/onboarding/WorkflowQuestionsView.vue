@@ -11,22 +11,22 @@
           >
             <v-select
               v-if="question.type === 'select'"
-              :model-value="formData[question.key]"
-              @update:model-value="updateFormValue(question.key, $event)"
+              v-model="formData[question.key]"
               :label="question.label"
               :items="question.options"
               :rules="[required]"
+              clearable
             />
             <v-text-field
               v-else-if="question.type === 'number'"
-              :model-value="formData[question.key]"
-              @update:model-value="
-                updateFormValue(question.key, Number($event))
-              "
+              v-model="formData[question.key]"
               :label="question.label"
               type="number"
               :rules="[required]"
             />
+            <div v-else class="text-red">
+              Unsupported type: {{ question.type }}
+            </div>
           </div>
         </v-form>
       </v-card-text>
@@ -35,25 +35,18 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, watch } from 'vue';
 import jsonata from 'jsonata';
 
-const valid = ref(false);
 const formRef = ref(null);
+const valid = ref(false);
+
 const formData = ref({});
-const visibleQuestionsData = ref([]);
+const visibleQuestions = ref([]);
+
 const required = (v) => !!v || 'Dit veld is verplicht';
 
-// Function to explicitly update form values and trigger reactivity
-const updateFormValue = async (key, value) => {
-  console.log(`Updating ${key} with value:`, value);
-  formData.value = { ...formData.value, [key]: value };
-
-  // Re-evaluate questions when form data changes
-  await updateVisibleQuestions();
-};
-
-const allQuestions = ref([
+const allQuestions = [
   {
     key: 'selfSchedule',
     label: 'Mag de klant zelf een afspraak inplannen?',
@@ -68,6 +61,13 @@ const allQuestions = ref([
     condition: "$.selfSchedule = 'Ja'",
   },
   {
+    key: 'followUp',
+    label: 'Wil je automatische opvolging als de klant niet reageert?',
+    type: 'select',
+    options: ['Ja', 'Nee'],
+    condition: "$.confirmAppointment = 'Ja'",
+  },
+  {
     key: 'revisit',
     label: 'Moeten vervolgbezoeken worden ingepland?',
     type: 'select',
@@ -75,68 +75,62 @@ const allQuestions = ref([
     condition: "$.selfSchedule = 'Nee'",
   },
   {
-    key: 'autoCloseDays',
-    label: 'Na hoeveel dagen moet een opdracht automatisch sluiten?',
-    type: 'number',
-    condition: "$.confirmAppointment = 'Ja'",
+    key: 'reminders',
+    label: 'Wil je herinneringen sturen voorafgaand aan de afspraak?',
+    type: 'select',
+    options: ['Ja', 'Nee'],
   },
-]);
+  {
+    key: 'afterMessage',
+    label: 'Wat ontvangt de klant na de werkopdracht?',
+    type: 'select',
+    options: ['Samenvatting', 'Bevestiging', 'Geen bericht'],
+  },
+  {
+    key: 'preInspection',
+    label: 'Is er een schouwing vereist voor uitvoering?',
+    type: 'select',
+    options: ['Ja', 'Nee'],
+  },
+  {
+    key: 'qcAfter',
+    label: 'Moet er een kwaliteitscontrole plaatsvinden na afloop?',
+    type: 'select',
+    options: ['Ja', 'Nee'],
+  },
+  {
+    key: 'autoCloseDays',
+    label:
+      'Na hoeveel dagen moet een werkopdracht automatisch worden gesloten?',
+    type: 'number',
+    condition: "$.qcAfter = 'Ja'",
+  },
+];
 
-// Function to evaluate async JSONata expressions
-async function evaluateJsonata(expression, data) {
-  try {
-    const expr = jsonata(expression);
-    const result = await expr.evaluate(data);
-    console.log(`Evaluated ${expression}:`, result);
-    return result === true;
-  } catch (e) {
-    console.warn('JSONata evaluatie mislukt:', e.message);
-    return false;
-  }
-}
-
-// Function to update visible questions based on form data
-async function updateVisibleQuestions() {
-  const visible = [];
-
-  for (const question of allQuestions.value) {
-    if (!question.condition) {
-      visible.push(question);
-      continue;
-    }
-
-    const shouldShow = await evaluateJsonata(
-      question.condition,
-      formData.value
-    );
-    if (shouldShow) {
-      visible.push(question);
-    }
-  }
-
-  visibleQuestionsData.value = visible;
-  console.log(
-    'Updated visible questions:',
-    visible.map((q) => q.key)
-  );
-}
-
-// Use a regular ref instead of computed for async operations
-const visibleQuestions = computed(() => {
-  return visibleQuestionsData.value;
-});
-
-// Initialize visible questions on mount
-onMounted(async () => {
-  await updateVisibleQuestions();
-});
-
-// Debug watcher
 watch(
   formData,
-  (newVal) => {
-    console.log('Form data changed:', newVal);
+  async (newData) => {
+    const result = [];
+
+    for (const question of allQuestions) {
+      if (!question.condition) {
+        result.push(question);
+        continue;
+      }
+
+      try {
+        const expr = jsonata(question.condition);
+        const isVisible = await expr.evaluate(newData);
+        if (isVisible === true) {
+          result.push(question);
+        }
+      } catch (err) {
+        console.warn(`Fout bij evaluatie van ${question.key}:`, err.message);
+      }
+    }
+
+    visibleQuestions.value = result;
   },
-  { deep: true }
+  { immediate: true, deep: true }
 );
 </script>
