@@ -7,8 +7,6 @@
             :title="item.label"
             :value="index + 1"
             :complete="step > index + 1"
-            @click="goToStep(index)"
-            editable
           />
           <v-divider v-if="index < steps.length - 1" />
         </template>
@@ -91,16 +89,6 @@ const prevStep = async () => {
 
   const prev = steps[step.value - 2];
   if (prev) router.push(`/onboarding/${prev.route}`);
-};
-
-const goToStep = async (index) => {
-  if (currentComponentRef.value?.submit) {
-    const success = await currentComponentRef.value.submit();
-    if (!success) return;
-  }
-
-  const target = steps[index];
-  if (target) router.push(`/onboarding/${target.route}`);
 };
 </script>
 
