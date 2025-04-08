@@ -24,10 +24,11 @@
 
       <v-stepper-actions
         class="stepper-actions"
-        :next-text="'Volgende'"
+        :next-text="isLastStep ? 'Afronden' : 'Volgende'"
         :prev-text="'Terug'"
-        @click:next="nextStep"
+        @click:next="isLastStep ? finish() : nextStep()"
         @click:prev="prevStep"
+        disabled="false"
       />
     </v-stepper>
 
@@ -38,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
@@ -61,6 +62,10 @@ const showSnackbar = (message) => {
   snackbarText.value = message;
   snackbar.value = true;
 };
+
+const isLastStep = computed(() => {
+  return step.value === steps.length;
+});
 
 watch(
   () => route.path,
@@ -89,6 +94,10 @@ const prevStep = async () => {
 
   const prev = steps[step.value - 2];
   if (prev) router.push(`/onboarding/${prev.route}`);
+};
+
+const finish = () => {
+  console.log('finished');
 };
 </script>
 
