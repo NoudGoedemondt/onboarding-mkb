@@ -14,6 +14,8 @@
               v-model="formData[question.key]"
               :label="question.label"
               :items="question.options"
+              item-title="label"
+              item-value="value"
               :rules="[required]"
               :loading="loading"
               :disabled="loading"
@@ -61,16 +63,27 @@ const required = (v) => !!v || 'Dit veld is verplicht';
 const allQuestions = [
   {
     key: 'selfSchedule',
-    label: 'Mag de klant zelf een afspraak inplannen?',
+    label:
+      'Wil je dat de klant zelf een afspraak inplant via een online portaal?',
     type: 'select',
-    options: ['Ja', 'Nee'],
+    options: [
+      {
+        label:
+          'Ja, de klant ontvangt een uitnodiging om zelf een afspraak in te plannen',
+        value: 'self',
+      },
+      {
+        label: 'Nee, een planner plant de afspraak vooraf in',
+        value: 'planner',
+      },
+    ],
   },
   {
     key: 'confirmAppointment',
     label: 'Moet de klant de afspraak bevestigen?',
     type: 'select',
     options: ['Ja', 'Nee'],
-    condition: "$.selfSchedule = 'Ja'",
+    condition: "$.selfSchedule = 'self'",
   },
   {
     key: 'followUp',
