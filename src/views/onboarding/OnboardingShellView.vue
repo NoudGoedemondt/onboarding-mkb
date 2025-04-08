@@ -12,15 +12,17 @@
         </template>
       </v-stepper-header>
 
-      <v-stepper-window class="stepper-window">
-        <router-view v-slot="{ Component }">
-          <component
-            :is="Component"
-            ref="currentComponentRef"
-            @notify="showSnackbar"
-          />
-        </router-view>
-      </v-stepper-window>
+      <transition :name="transitionName" mode="out-in">
+        <v-stepper-window class="stepper-window" :key="route.fullPath">
+          <router-view v-slot="{ Component }">
+            <component
+              :is="Component"
+              ref="currentComponentRef"
+              @notify="showSnackbar"
+            />
+          </router-view>
+        </v-stepper-window>
+      </transition>
 
       <v-stepper-actions
         class="stepper-actions"
@@ -53,6 +55,8 @@ const steps = [
 ];
 
 const step = ref(1);
+const transitionName = ref('slide-left');
+
 const currentComponentRef = ref(null);
 
 const snackbar = ref(false);
@@ -82,6 +86,7 @@ const nextStep = async () => {
     if (!success) return;
   }
 
+  transitionName.value = 'slide-left';
   const next = steps[step.value];
   if (next) router.push(`/onboarding/${next.route}`);
 };
@@ -92,12 +97,19 @@ const prevStep = async () => {
     if (!success) return;
   }
 
+  transitionName.value = 'slide-right';
   const prev = steps[step.value - 2];
   if (prev) router.push(`/onboarding/${prev.route}`);
 };
 
-const finish = () => {
-  console.log('finished');
+const finish = async () => {
+  try {
+    showSnackbar('Onboarding afgerond!');
+    await router.push('/');
+  } catch (error) {
+    console.error('Fout bij afronden onboarding:', error.message);
+    showSnackbar('Er is iets misgegaan bij het afronden.');
+  }
 };
 </script>
 
@@ -125,5 +137,32 @@ const finish = () => {
 .stepper-actions {
   position: sticky;
   bottom: 0;
+}
+
+.slide-left-enter-active,
+.slide-right-leave-active {
+  transition: all 0.1s ease-in;
+}
+.slide-left-leave-active,
+.slide-right-enter-active {
+  transition: all 0.1s ease-in;
+}
+
+.slide-left-enter-from {
+  transform: translateX(50%);
+  opacity: 0;
+}
+.slide-left-leave-to {
+  transform: translateX(-50%);
+  opacity: 0;
+}
+
+.slide-right-enter-from {
+  transform: translateX(-50%);
+  opacity: 0;
+}
+.slide-right-leave-to {
+  transform: translateX(50%);
+  opacity: 0;
 }
 </style>

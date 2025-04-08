@@ -70,7 +70,7 @@ const allQuestions = [
       {
         label:
           'Ja, de klant ontvangt een uitnodiging om zelf een afspraak in te plannen',
-        value: 'self',
+        value: 'customer',
       },
       {
         label: 'Nee, een planner plant de afspraak vooraf in',
