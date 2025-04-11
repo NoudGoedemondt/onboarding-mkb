@@ -58,7 +58,8 @@ const loading = ref(true);
 const formData = ref({});
 const visibleQuestions = ref([]);
 
-const required = (v) => !!v || 'Dit veld is verplicht';
+const required = (v) =>
+  (v !== undefined && v !== null && v !== '') || 'Dit veld is verplicht';
 
 const allQuestions = [
   {
@@ -70,65 +71,111 @@ const allQuestions = [
       {
         label:
           'Ja, de klant ontvangt een uitnodiging om zelf een afspraak in te plannen',
-        value: 'customer',
+        value: true,
       },
       {
         label: 'Nee, een planner plant de afspraak vooraf in',
-        value: 'planner',
+        value: false,
       },
     ],
   },
   {
     key: 'confirmAppointment',
-    label: 'Moet de klant de afspraak bevestigen?',
+    label:
+      'Wil je een vooraf geplande afspraak laten bevestigen door de klant?',
     type: 'select',
-    options: ['Ja', 'Nee'],
-    condition: "$.selfSchedule = 'self'",
+    options: [
+      {
+        label:
+          'Ja, de klant moet expliciet bevestigen voordat de afspraak definitief is',
+        value: true,
+      },
+      {
+        label: 'Nee, de afspraak wordt automatisch definitief',
+        value: false,
+      },
+    ],
+    condition: '$.selfSchedule = false',
   },
   {
     key: 'followUp',
-    label: 'Wil je automatische opvolging als de klant niet reageert?',
+    label:
+      'Wil je automatische opvolgingen versturen als de klant niet reageert?',
     type: 'select',
-    options: ['Ja', 'Nee'],
-    condition: "$.confirmAppointment = 'Ja'",
+    options: [
+      {
+        label:
+          'Ja, de klant ontvangt opvolgingen om hun afspraak te bevestigen',
+        value: true,
+      },
+      { label: 'Nee, de klant ontvangt een enkele bevestiging', value: false },
+    ],
   },
   {
     key: 'revisit',
-    label: 'Moeten vervolgbezoeken worden ingepland?',
+    label:
+      'Moeten vervolgbezoeken ingepland worden als het eerste bezoek niet succesvol is?',
     type: 'select',
-    options: ['Ja', 'Nee'],
-    condition: "$.selfSchedule = 'Nee'",
+    options: [
+      {
+        label:
+          'Ja, vervolgbezoeken worden opnieuw ingepland tot de afspraak is uitgevoerd of deze handmatig wordt gesloten',
+        value: true,
+      },
+      {
+        label:
+          'Nee, afspraken zijn direct uitvoerbaar en vereisen geen herplanning',
+        value: false,
+      },
+    ],
   },
   {
     key: 'reminders',
-    label: 'Wil je herinneringen sturen voorafgaand aan de afspraak?',
+    label: 'Wil je de klant herinneringen sturen voorafgaand aan de afspraak?',
     type: 'select',
-    options: ['Ja', 'Nee'],
+    options: [
+      {
+        label: 'Ja, de klant krijgt herinneringen vóór de afspraak',
+        value: true,
+      },
+      { label: 'Nee, geen herinneringen', value: false },
+    ],
   },
   {
     key: 'afterMessage',
-    label: 'Wat ontvangt de klant na de werkopdracht?',
+    label:
+      'Wil je de klant een bericht sturen na afronding van de werkopdracht?',
     type: 'select',
-    options: ['Samenvatting', 'Bevestiging', 'Geen bericht'],
+    options: [
+      { label: 'Ja, de klant ontvangt een samenvatting', value: 'summary' },
+      { label: 'Ja, de klant ontvangt een bevestiging', value: 'confirmation' },
+      { label: 'Nee, de klant ontvangt geen bericht', value: 'none' },
+    ],
   },
   {
     key: 'preInspection',
-    label: 'Is er een schouwing vereist voor uitvoering?',
+    label: 'Moet er een schouwing plaatsvinden vóór de echte uitvoering?',
     type: 'select',
-    options: ['Ja', 'Nee'],
+    options: [
+      { label: 'Ja, schouwing verplicht', value: true },
+      { label: 'Nee, direct uitvoeren', value: false },
+    ],
   },
   {
     key: 'qcAfter',
-    label: 'Moet er een kwaliteitscontrole plaatsvinden na afloop?',
+    label:
+      'Moet er na uitvoering een kwaliteitscontrole of goedkeuring plaatsvinden?',
     type: 'select',
-    options: ['Ja', 'Nee'],
+    options: [
+      { label: 'Ja, door een planner/technicus', value: true },
+      { label: 'Nee, werkopdracht wordt direct gesloten', value: false },
+    ],
   },
   {
     key: 'autoCloseDays',
     label:
       'Na hoeveel dagen moet een werkopdracht automatisch worden gesloten?',
     type: 'number',
-    condition: "$.qcAfter = 'Ja'",
   },
 ];
 
