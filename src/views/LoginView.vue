@@ -1,13 +1,17 @@
 <template>
-  <v-sheet rounded>
-    <v-card class="mt-5 mx-auto px-6 py-8" max-width="344">
+  <v-sheet class="background">
+    <v-card class="px-6 py-8" min-width="400">
+      <v-card-title class="text-center mb-5">
+        Meld je aan met je account
+      </v-card-title>
+
       <v-form v-model="form" @submit.prevent="onSubmit">
         <!-- Email field -->
         <v-text-field
           v-model="email"
           :readonly="loading"
           :rules="[required]"
-          class="mb-2"
+          class="mb-1"
           label="Email"
         ></v-text-field>
 
@@ -20,9 +24,8 @@
           type="password"
         ></v-text-field>
 
-        <br />
-
         <v-btn
+          class="mt-5"
           :disabled="!form"
           :loading="loading"
           color="primary"
@@ -95,3 +98,15 @@ const onSubmit = async () => {
   }
 };
 </script>
+
+<style scoped>
+.background {
+  height: calc(100vh - 64px);
+  background: url('@/assets/pti/Waves 2 Cropped.png') no-repeat center center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 64px;
+}
+</style>
