@@ -1,6 +1,6 @@
 <template>
-  <div class="content">
-    <v-stepper v-model="step" class="stepper">
+  <v-sheet class="background">
+    <v-stepper v-model="step" class="stepper" elevation="0">
       <v-stepper-header class="stepper-header">
         <template v-for="(item, index) in steps" :key="item.route">
           <v-stepper-item
@@ -13,7 +13,10 @@
       </v-stepper-header>
 
       <transition :name="transitionName" mode="out-in">
-        <v-stepper-window class="stepper-window" :key="route.fullPath">
+        <v-stepper-window
+          :key="route.fullPath"
+          class="stepper-window pa-0 ma-0"
+        >
           <router-view v-slot="{ Component }">
             <component
               :is="Component"
@@ -26,6 +29,7 @@
 
       <v-stepper-actions
         class="stepper-actions"
+        v-if="false"
         :next-text="isLastStep ? 'Afronden' : 'Volgende'"
         :prev-text="'Terug'"
         @click:next="isLastStep ? finish() : nextStep()"
@@ -37,7 +41,7 @@
     <v-snackbar v-model="snackbar" :timeout="3000" location="bottom center">
       {{ snackbarText }}
     </v-snackbar>
-  </div>
+  </v-sheet>
 </template>
 
 <script setup>
@@ -48,9 +52,9 @@ const router = useRouter();
 const route = useRoute();
 
 const steps = [
-  { label: 'Bedrijfsinfo', route: 'company-info' },
+  { label: 'Bedrijfsgegevens', route: 'company-info' },
   { label: 'Logo', route: 'upload-logo' },
-  { label: 'Workflow vragenlijst', route: 'workflow-questions' },
+  { label: 'Workflow', route: 'workflow-questions' },
   { label: 'Samenvatting', route: 'summary' },
 ];
 
@@ -114,19 +118,33 @@ const finish = async () => {
 </script>
 
 <style scoped>
-.content {
-  max-width: 70vw;
-  margin: 0 auto;
+.background {
+  height: calc(100vh - 64px);
+  background: url('@/assets/pti/Waves 2 Cropped.png') repeat center center;
+  background-size: cover;
+  background-attachment: fixed;
+  display: flex;
+  align-items: start;
+  justify-content: center;
 }
 
 .stepper {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 64px);
+  height: calc(
+    100vh - 64px - 16px
+  ); /* subtract app-header and stepper-header top margin height */
+  background-color: transparent;
+  width: 100%; /*have scrollbar appear at right side of the screen*/
+  margin-top: 16px;
 }
 
 .stepper-header {
   min-height: 72px;
+  background-color: white;
+  width: 70vw;
+  margin: 0 auto;
+  border-radius: 4px;
 }
 
 .stepper-window {
