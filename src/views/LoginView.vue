@@ -6,16 +6,13 @@
       </v-card-title>
 
       <v-form v-model="form" @submit.prevent="onSubmit">
-        <!-- Email field -->
         <v-text-field
           v-model="email"
           :readonly="loading"
           :rules="[required]"
-          class="mb-1"
           label="Email"
         ></v-text-field>
 
-        <!-- Password field -->
         <v-text-field
           v-model="password"
           :readonly="loading"

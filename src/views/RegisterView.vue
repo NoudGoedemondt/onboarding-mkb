@@ -6,12 +6,10 @@
       </v-card-title>
 
       <v-form v-model="form" @submit.prevent="onSubmit">
-        <!-- Name Fields -->
         <v-text-field
           v-model="firstName"
           :readonly="loading"
           :rules="[required]"
-          class="mb-1"
           label="Voornaam"
         ></v-text-field>
 
@@ -19,11 +17,9 @@
           v-model="lastName"
           :readonly="loading"
           :rules="[required]"
-          class="mb-1"
           label="Achternaam"
         ></v-text-field>
 
-        <!-- Email Field -->
         <v-text-field
           v-model="email"
           :readonly="loading"
@@ -33,17 +29,14 @@
 
         <br />
 
-        <!-- Password Field -->
         <v-text-field
           v-model="password"
           :readonly="loading"
           :rules="[required, minPassword]"
-          class="mb-1"
           label="Wachtwoord"
           type="password"
         ></v-text-field>
 
-        <!-- Confirm Password Field -->
         <v-text-field
           v-model="confirmPassword"
           :readonly="loading"
@@ -52,7 +45,6 @@
           type="password"
         ></v-text-field>
 
-        <!-- Register Button -->
         <v-btn
           class="mt-5"
           :disabled="!form"
