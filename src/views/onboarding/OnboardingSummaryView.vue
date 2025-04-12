@@ -1,40 +1,72 @@
 <template>
   <v-container v-if="user">
     <v-card class="pa-5 mx-auto" max-width="800">
-      <v-card-title class="text-h5">Samenvatting</v-card-title>
+      <v-card-title class="text-center mb-5">Samenvatting</v-card-title>
+
       <v-card-text>
-        <v-skeleton-loader v-if="loading" type="card" />
-        <template v-else>
-          <!-- Bedrijfsgegevens -->
-          <v-subheader>Bedrijfsinformatie</v-subheader>
-          <v-divider class="mb-3" />
-          <p><strong>Naam:</strong> {{ company.name }}</p>
-          <p><strong>Adres:</strong> {{ company.address }}</p>
-          <p><strong>Postcode:</strong> {{ company.zip }}</p>
-          <p><strong>Plaats:</strong> {{ company.city }}</p>
+        <v-form ref="formRef" v-model="valid" lazy-validation>
+          <v-skeleton-loader v-if="loading" type="card" />
 
-          <!-- Logo -->
-          <v-subheader class="mt-5">Logo</v-subheader>
-          <v-divider class="mb-3" />
-          <div v-if="logo">
-            <img :src="logo" alt="Logo preview" style="max-height: 120px" />
-          </div>
-          <div v-else>
-            <em>Geen logo geüpload.</em>
-          </div>
+          <template v-else>
+            <!-- Bedrijfsgegevens -->
+            <v-card-title class="text-subtitle-1 mb-3"
+              >Bedrijfsinformatie</v-card-title
+            >
 
-          <!-- Workflowvragen -->
-          <v-subheader class="mt-5">Workflowvragen</v-subheader>
-          <v-divider class="mb-3" />
-          <div v-if="workflow && Object.keys(workflow).length">
-            <div v-for="(value, key) in workflow" :key="key" class="mb-2">
-              <strong>{{ formatKey(key) }}:</strong> {{ value }}
+            <v-card-text class="mb-3">
+              <v-row dense>
+                <v-col cols="12" sm="6">
+                  <strong>Naam:</strong> {{ company.name || '-' }}
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <strong>Adres:</strong> {{ company.address || '-' }}
+                </v-col>
+                <v-col cols="6">
+                  <strong>Postcode:</strong> {{ company.zip || '-' }}
+                </v-col>
+                <v-col cols="6">
+                  <strong>Plaats:</strong> {{ company.city || '-' }}
+                </v-col>
+              </v-row>
+            </v-card-text>
+
+            <v-divider class="mb-3" />
+
+            <!-- Logo -->
+            <v-card-title class="text-subtitle-1 mb-3">Logo</v-card-title>
+
+            <div>
+              <img
+                v-if="logo"
+                :src="logo"
+                alt="Logo preview"
+                style="max-height: 64px; margin-bottom: 12px; margin-left: 4px"
+              />
+              <div v-else><em>Geen logo geüpload.</em></div>
             </div>
-          </div>
-          <div v-else>
-            <em>Geen workflowvragen ingevuld.</em>
-          </div>
-        </template>
+
+            <v-divider class="mb-3" />
+
+            <!-- Workflowvragen -->
+            <v-card-title class="text-subtitle-1 mb-3"
+              >Workflowvragen</v-card-title
+            >
+
+            <v-card-text>
+              <div v-if="workflow && Object.keys(workflow).length">
+                <div v-for="(value, key) in workflow" :key="key" class="mb-3">
+                  <strong class="mr-2">{{ getQuestionLabel(key) }}:</strong>
+                  <p>{{ getAnswerLabel(key, value) }}</p>
+                </div>
+              </div>
+              <div v-else>
+                <em>Geen workflowvragen ingevuld.</em>
+              </div>
+            </v-card-text>
+
+            <v-divider class="mb-3" />
+          </template>
+        </v-form>
       </v-card-text>
 
       <v-card-actions class="justify-space-between">
@@ -44,8 +76,8 @@
           variant="elevated"
           color="primary"
         >
-          Afronden</v-btn
-        >
+          Afronden
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
@@ -54,23 +86,39 @@
 </template>
 
 <script setup>
-import { ref, onMounted, inject } from 'vue';
+import { ref, onMounted, inject, defineExpose } from 'vue';
 import { auth, db } from '@/firebase';
 import { ref as dbRef, get } from 'firebase/database';
+import workflowQuestions from '@/workflowQuestions';
 
 const onboarding = inject('onboardingControls');
 
 const user = auth.currentUser;
 const loading = ref(true);
+const formRef = ref(null);
+const valid = ref(false);
 
 const company = ref({});
 const logo = ref('');
 const workflow = ref({});
 
-const formatKey = (key) => {
-  return key
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, (str) => str.toUpperCase());
+const getQuestionLabel = (key) => {
+  const q = workflowQuestions.find((q) => q.key === key);
+  return q?.label ?? key;
+};
+
+const getAnswerLabel = (key, value) => {
+  const q = workflowQuestions.find((q) => q.key === key);
+  if (q?.type === 'select') {
+    const option = q.options?.find((o) => o.value === value);
+    return option?.label ?? value;
+  }
+  return value;
+};
+
+const submit = async () => {
+  const isValid = await formRef.value?.validate();
+  return isValid?.valid ?? false;
 };
 
 onMounted(async () => {
@@ -92,4 +140,6 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+defineExpose({ submit });
 </script>
