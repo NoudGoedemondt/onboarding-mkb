@@ -1,20 +1,5 @@
 <template>
-  <div class="position-relative" :style="{ minHeight: `${heroHeight}` }">
-    <v-sheet
-      :style="{
-        backgroundImage: `url(${waveCard})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        position: 'absolute',
-        top: '0',
-        left: '0',
-        right: '0',
-        bottom: '0',
-        zIndex: '0',
-      }"
-    >
-    </v-sheet>
-
+  <v-sheet class="background">
     <v-container
       class="position-relative h-100"
       :style="{
@@ -62,13 +47,21 @@
         <img :src="ctaMockUp" width="600" />
       </v-row>
     </v-container>
-  </div>
+  </v-sheet>
 </template>
 
 <script setup>
 import ctaMockUp from '@/assets/pti/CTA-mock-up-1024x692.webp';
-import waveCard from '@/assets/pti/wave-card-grid-w.webp';
 import planningSuiteLogo from '@/assets/pti/pti-logo-wide.svg';
-
-const heroHeight = '100vh';
 </script>
+
+<style scoped>
+.background {
+  height: calc(100vh - 64px);
+  background: url('@/assets/pti/wave-card-grid-w.webp') no-repeat center center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>

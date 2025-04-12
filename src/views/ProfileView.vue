@@ -5,7 +5,7 @@
 
       <br />
 
-      <company-section @notify="showSnackbar" />
+      <!-- <company-section @notify="showSnackbar" /> -->
 
       <br />
 
@@ -22,7 +22,7 @@
 
 <script setup>
 import ProfileSection from '@/components/profile/ProfileSection.vue';
-import CompanySection from '@/components/profile/CompanySection.vue';
+// import CompanySection from '@/components/profile/CompanySection.vue';
 import DeleteAccount from '@/components/profile/DeleteAccount.vue';
 
 import { ref } from 'vue';
