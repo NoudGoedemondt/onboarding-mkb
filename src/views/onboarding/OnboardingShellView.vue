@@ -26,16 +26,6 @@
           </router-view>
         </v-stepper-window>
       </transition>
-
-      <v-stepper-actions
-        class="stepper-actions"
-        v-if="false"
-        :next-text="isLastStep ? 'Afronden' : 'Volgende'"
-        :prev-text="'Terug'"
-        @click:next="isLastStep ? finish() : nextStep()"
-        @click:prev="prevStep"
-        disabled="false"
-      />
     </v-stepper>
 
     <v-snackbar v-model="snackbar" :timeout="3000" location="bottom center">
@@ -45,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, watch, provide } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
@@ -70,10 +60,6 @@ const showSnackbar = (message) => {
   snackbarText.value = message;
   snackbar.value = true;
 };
-
-const isLastStep = computed(() => {
-  return step.value === steps.length;
-});
 
 watch(
   () => route.path,
@@ -115,6 +101,12 @@ const finish = async () => {
     showSnackbar('Er is iets misgegaan bij het afronden.');
   }
 };
+
+provide('onboardingControls', {
+  nextStep,
+  prevStep,
+  finish,
+});
 </script>
 
 <style scoped>
@@ -152,35 +144,30 @@ const finish = async () => {
   overflow-y: auto;
 }
 
-.stepper-actions {
-  position: sticky;
-  bottom: 0;
-}
-
 .slide-left-enter-active,
 .slide-right-leave-active {
-  transition: all 0.1s ease-in;
+  transition: all 0.15s ease-in;
 }
 .slide-left-leave-active,
 .slide-right-enter-active {
-  transition: all 0.1s ease-in;
+  transition: all 0.15s ease-in;
 }
 
 .slide-left-enter-from {
-  transform: translateX(50%);
+  transform: translateY(-50%);
   opacity: 0;
 }
 .slide-left-leave-to {
-  transform: translateX(-50%);
+  transform: translateY(50%);
   opacity: 0;
 }
 
 .slide-right-enter-from {
-  transform: translateX(-50%);
+  transform: translateY(50%);
   opacity: 0;
 }
 .slide-right-leave-to {
-  transform: translateX(50%);
+  transform: translateY(-50%);
   opacity: 0;
 }
 </style>

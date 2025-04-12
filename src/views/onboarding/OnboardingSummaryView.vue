@@ -36,6 +36,17 @@
           </div>
         </template>
       </v-card-text>
+
+      <v-card-actions class="justify-space-between">
+        <v-btn @click="onboarding.prevStep?.()">Terug</v-btn>
+        <v-btn
+          @click="onboarding.finish?.()"
+          variant="elevated"
+          color="primary"
+        >
+          Afronden</v-btn
+        >
+      </v-card-actions>
     </v-card>
   </v-container>
 
@@ -43,9 +54,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, inject } from 'vue';
 import { auth, db } from '@/firebase';
 import { ref as dbRef, get } from 'firebase/database';
+
+const onboarding = inject('onboardingControls');
 
 const user = auth.currentUser;
 const loading = ref(true);

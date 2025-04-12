@@ -43,6 +43,17 @@
           </v-row>
         </v-form>
       </v-card-text>
+
+      <v-card-actions class="justify-space-between">
+        <v-btn @click="onboarding.prevStep?.()" disabled>Terug</v-btn>
+        <v-btn
+          @click="onboarding.nextStep?.()"
+          variant="elevated"
+          color="primary"
+        >
+          Volgende</v-btn
+        >
+      </v-card-actions>
     </v-card>
   </v-container>
 
@@ -50,9 +61,11 @@
 </template>
 
 <script setup>
-import { ref, defineExpose, defineEmits, onMounted } from 'vue';
+import { ref, defineExpose, defineEmits, onMounted, inject } from 'vue';
 import { auth, db } from '@/firebase';
 import { ref as dbRef, set, get } from 'firebase/database';
+
+const onboarding = inject('onboardingControls');
 
 const emit = defineEmits(['notify']);
 
