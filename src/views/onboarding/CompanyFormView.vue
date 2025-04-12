@@ -1,6 +1,10 @@
 <template>
   <v-container v-if="user">
     <v-card class="pa-5 mx-auto" max-width="600">
+      <v-card-title class="text-center mb-5">
+        Voer je bedrijfsgegevens in
+      </v-card-title>
+
       <v-card-text>
         <v-form ref="formRef" v-model="valid" lazy-validation>
           <v-text-field
@@ -19,6 +23,7 @@
             :disabled="loading"
             required
           />
+
           <v-row>
             <v-col cols="6">
               <v-text-field
