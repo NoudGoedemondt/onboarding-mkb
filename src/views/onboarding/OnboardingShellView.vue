@@ -28,7 +28,12 @@
       </transition>
     </v-stepper>
 
-    <v-snackbar v-model="snackbar" :timeout="3000" location="bottom center">
+    <v-snackbar
+      color="white"
+      v-model="snackbar"
+      :timeout="3000"
+      location="bottom center"
+    >
       {{ snackbarText }}
     </v-snackbar>
   </v-sheet>
