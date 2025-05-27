@@ -2,16 +2,16 @@ export default [
   {
     key: 'selfSchedule',
     label:
-      'Wil je dat de klant zelf een afspraak inplant via een online portaal?',
+      'Zijn er planners die verantwoordelijk zijn voor het inplannen van afspraken?',
     type: 'select',
     options: [
       {
-        label:
-          'Ja, de klant ontvangt een uitnodiging om zelf een afspraak in te plannen',
+        label: 'Ja, een planner plant de afpsraak vooraf in',
         value: true,
       },
       {
-        label: 'Nee, een planner plant de afspraak vooraf in',
+        label:
+          'Nee, de klant ontvangt een uitnodiging om zelf een afspraak in te plannen',
         value: false,
       },
     ],
@@ -32,7 +32,7 @@ export default [
         value: false,
       },
     ],
-    condition: '$.selfSchedule = false',
+    // condition: '$.selfSchedule = false',
   },
   {
     key: 'followUp',
@@ -50,11 +50,12 @@ export default [
         value: false,
       },
     ],
+    // condition: '$.confirmAppointment = true or $.selfSchedule = true',
   },
   {
     key: 'revisit',
     label:
-      'Moeten vervolgbezoeken ingepland worden als het eerste bezoek niet succesvol is?',
+      'Moeten er vervolgbezoeken ingepland worden als het eerste bezoek niet succesvol is?',
     type: 'select',
     options: [
       {
@@ -68,6 +69,7 @@ export default [
         value: false,
       },
     ],
+    // condition: '$.selfSchedule = false or $.selfSchedule = true',
   },
   {
     key: 'reminders',
@@ -83,6 +85,7 @@ export default [
         value: false,
       },
     ],
+    // condition: 'false',
   },
   {
     key: 'afterMessage',
@@ -103,6 +106,7 @@ export default [
         value: 'none',
       },
     ],
+    // condition: 'false',
   },
   {
     key: 'preInspection',
@@ -118,6 +122,7 @@ export default [
         value: false,
       },
     ],
+    // condition: 'false',
   },
   {
     key: 'qcAfter',
@@ -134,11 +139,13 @@ export default [
         value: false,
       },
     ],
+    // condition: 'false',
   },
   {
     key: 'autoCloseDays',
     label:
       'Na hoeveel dagen moet een werkopdracht automatisch worden gesloten?',
     type: 'number',
+    // condition: 'false',
   },
 ];
