@@ -8,6 +8,8 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "bpmn-js": "^18.6.2",
+    "bpmn-moddle": "^9.0.1",
     "core-js": "^3.8.3",
     "firebase": "^11.4.0",
     "jsonata": "^2.0.6",
